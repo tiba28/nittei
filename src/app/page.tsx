@@ -83,7 +83,7 @@ export default function CreateEvent() {
           fontFamily: "sans-serif",
         }}
       >
-        <h1 style={{ textAlign: "center", fontSize: "22px" }}>📅 予定調整くん</h1>
+        <h1 style={{ textAlign: "center", fontSize: "22px" }}>📅 予定調整ツールA</h1>
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <section>
             <label style={{ fontWeight: "bold" }}>1. イベント名</label>
