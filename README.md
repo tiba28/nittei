@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+サービス概要
 
-## Getting Started
+「空気を読みすぎて疲れる日程調整」を、技術で解決する。
 
-First, run the development server:
+1. 背景・課題
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+従来の日程調整ツールでは回答（○や×）が可視化されるため、以下の心理的摩擦が発生している。
+「自分だけ暇だと思われたくない」という見栄。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+「特定の人が来るなら行きたい/行きたくない」という本音。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+ホストが回答状況を見て、気を遣って日程を決められない。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. 解決策 
 
-## Learn More
+完全非公開回答： 他の参加者の回答を一切見せず、ホストのみが管理。
 
-To learn more about Next.js, take a look at the following resources:
+裏条件： 「Aさんが来るなら行く/行かない」という条件を、誰にも知られずに設定可能。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+ホストの負担軽減： 非公開にすることで、参加者の本音を集約しつつ、ホストが参加メンバーを誰にも角を立てず選択しやすくなり、決定時の心理的障壁を下げる。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. 技術スタック
 
-## Deploy on Vercel
+Next.js (App Router): 日程調整で裏条件など公開されてはいけない情報を扱うため、サーバーサイドで処理を完結させ、クライアントに対して隠蔽する設計。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Supabase (RLS): 扱いやすいデータべースであり、複雑な条件分岐などを効率的に管理
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4.技術的挑戦と課題
+
+開発過程でAIを積極的に活用。大規模なコード生成時に意図しない削除やデグレードが発生するリスクを経験。この経験を通じ、AIの出力を鵜呑みにせず、また的確に指示を出し自分で確認すること、および変更履歴を細かく管理することの重要性を痛感した。
+
+既知のセキュリティ課題： 現状、一部のロジックがフロントエンド側に残っており、開発者ツールでのデータ閲覧可能性を認識している。
+
+解決策（Next Step）： すべての条件判定ロジックをバックエンドのRoute Handlersへ完全に移行し、SupabaseのRLSを厳格化することで解決予定。
