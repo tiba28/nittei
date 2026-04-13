@@ -84,6 +84,21 @@ export default function CreateEvent() {
         }}
       >
         <h1 style={{ textAlign: "center", fontSize: "22px" }}>📅 予定調整ツールA</h1>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: "16px",
+            lineHeight: "1.8",
+            margin: "0 auto 24px",
+            maxWidth: "720px",
+          }}
+        >
+          nitteiは、参加者同士に回答を見せずに日程調整ができるツールです。
+          候補日を作成して回答を集めるだけでなく、表では出しにくい条件も記入できます。
+          ホストは回答をまとめて確認でき、日程決定後の連絡文面作成まで進められます。
+        </p>
+
+
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <section>
             <label style={{ fontWeight: "bold" }}>1. イベント名</label>

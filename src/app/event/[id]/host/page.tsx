@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import CalendarSetButton from './calendarsetbutton';
 
 type AnswerRow = {
     user_name: string;
@@ -536,6 +537,14 @@ export default function HostPage() {
                     ))}
                 </div>
             </section>
+
+            <div className="mt-8 shadow-sm p-4 border rounded-xl">
+                <h2 className="text-lg font-bold mb-2">カレンダー連携</h2>
+                <p className="text-sm text-gray-600 mb-4">
+                    日程を確定すると同時に、自分と参加者のGoogleカレンダーに予定を自動登録します。
+                </p>
+                <CalendarSetButton />
+            </div>
 
             <section
                 style={{

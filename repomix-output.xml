@@ -1,0 +1,3800 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+eslint.config.mjs
+next.config.ts
+package.json
+postcss.config.mjs
+public/file.svg
+public/globe.svg
+public/next.svg
+public/vercel.svg
+public/window.svg
+README.md
+src/app/admin/page.tsx
+src/app/api/admin/stats/route.ts
+src/app/api/events/[id]/answer-names/route.ts
+src/app/api/events/[id]/answer-restore/route.ts
+src/app/api/events/[id]/answer-upsert/route.ts
+src/app/api/events/[id]/feedback/route.ts
+src/app/api/events/[id]/host-data/route.ts
+src/app/api/events/[id]/host-login/route.ts
+src/app/api/events/[id]/log/route.ts
+src/app/api/events/[id]/public/route.ts
+src/app/api/events/create/route.ts
+src/app/api/premium/area-suggest/route.ts
+src/app/api/premium/place-suggest/route.ts
+src/app/api/suggest/route.ts
+src/app/event/[id]/host/page.tsx
+src/app/event/[id]/page.tsx
+src/app/favicon.ico
+src/app/globals.css
+src/app/layout.tsx
+src/app/lib/host-session.ts
+src/app/lib/supabase.ts
+src/app/lib/supabase/server.ts
+src/app/page.tsx
+src/app/sitemap.ts
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/app/sitemap.ts">
+import type { MetadataRoute } from "next";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+    const baseUrl = "https://nittei-green.vercel.app";
+
+    return [
+        {
+            url: `${baseUrl}/`,
+            lastModified: new Date(),
+        },
+    ];
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="src/app/admin/page.tsx">
+"use client";
+
+import { useState } from "react";
+
+type StatsResponse = {
+    totalEvents: number;
+    dailyCounts: Record<string, number>;
+    weeklyCounts: Record<string, number>;
+    averageAnswerCount: number;
+    averageCandidateDateCount: number;
+};
+
+export default function AdminStatsPage() {
+    const [adminKey, setAdminKey] = useState("");
+    const [stats, setStats] = useState<StatsResponse | null>(null);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const fetchStats = async () => {
+        setError("");
+        setLoading(true);
+
+        try {
+            const res = await fetch("/api/admin/stats", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ admin_key: adminKey }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data?.error || "failed");
+            }
+
+            setStats(data);
+        } catch (e: any) {
+            setStats(null);
+            setError(e?.message || "取得に失敗しました。");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <main style={{ maxWidth: 720, margin: "0 auto", padding: 24, fontFamily: "sans-serif" }}>
+            <h1 style={{ fontSize: 28, fontWeight: "bold", marginBottom: 16 }}>管理用集計</h1>
+
+            <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+                <input
+                    type="password"
+                    placeholder="ADMIN_STATS_KEY"
+                    value={adminKey}
+                    onChange={(e) => setAdminKey(e.target.value)}
+                    style={{
+                        flex: 1,
+                        minWidth: 260,
+                        padding: 12,
+                        borderRadius: 10,
+                        border: "1px solid #ccc",
+                    }}
+                />
+                <button
+                    type="button"
+                    onClick={fetchStats}
+                    disabled={loading}
+                    style={{
+                        padding: "12px 18px",
+                        borderRadius: 10,
+                        border: "none",
+                        background: "#111",
+                        color: "#fff",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                    }}
+                >
+                    {loading ? "取得中..." : "集計を見る"}
+                </button>
+            </div>
+
+            {error && <div style={{ color: "#c53030", marginBottom: 16 }}>{error}</div>}
+
+            {stats && (
+                <div style={{ display: "grid", gap: 16 }}>
+                    <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
+                        <div>総イベント作成数：{stats.totalEvents}</div>
+                        <div>回答数の平均：{stats.averageAnswerCount}</div>
+                        <div>候補日数の平均：{stats.averageCandidateDateCount}</div>
+                    </div>
+
+                    <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
+                        <h2 style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>日別作成数</h2>
+                        <div style={{ display: "grid", gap: 6 }}>
+                            {Object.entries(stats.dailyCounts)
+                                .sort((a, b) => a[0].localeCompare(b[0]))
+                                .map(([date, count]) => (
+                                    <div key={date}>
+                                        {date} : {count}
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+
+                    <div style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
+                        <h2 style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>週別作成数</h2>
+                        <div style={{ display: "grid", gap: 6 }}>
+                            {Object.entries(stats.weeklyCounts)
+                                .sort((a, b) => a[0].localeCompare(b[0]))
+                                .map(([week, count]) => (
+                                    <div key={week}>
+                                        {week} 週 : {count}
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </main>
+    );
+}
+</file>
+
+<file path="src/app/api/admin/stats/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../lib/supabase/server";
+
+function formatDateKey(date: Date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function startOfWeek(date: Date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+        const adminKey = String(body?.admin_key || "");
+
+        if (!process.env.ADMIN_STATS_KEY || adminKey !== process.env.ADMIN_STATS_KEY) {
+            return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+        }
+
+        const supabase = createServerSupabase();
+
+        const { data: events, error: eventsError } = await supabase
+            .from("events")
+            .select("id,created_at,candidate_dates");
+
+        if (eventsError) {
+            console.error(eventsError);
+            return NextResponse.json({ error: "failed" }, { status: 500 });
+        }
+
+        const { data: answers, error: answersError } = await supabase
+            .from("answers")
+            .select("event_id");
+
+        if (answersError) {
+            console.error(answersError);
+            return NextResponse.json({ error: "failed" }, { status: 500 });
+        }
+
+        const totalEvents = events?.length || 0;
+
+        const dailyCounts: Record<string, number> = {};
+        const weeklyCounts: Record<string, number> = {};
+        const answerCountMap = new Map<string, number>();
+
+        for (const ans of answers || []) {
+            const eventId = String(ans.event_id || "");
+            if (!eventId) continue;
+            answerCountMap.set(eventId, (answerCountMap.get(eventId) || 0) + 1);
+        }
+
+        let totalCandidateDates = 0;
+        let totalAnswerCount = 0;
+
+        for (const event of events || []) {
+            const createdAt = new Date(event.created_at);
+            const dayKey = formatDateKey(createdAt);
+            const weekKey = formatDateKey(startOfWeek(createdAt));
+
+            dailyCounts[dayKey] = (dailyCounts[dayKey] || 0) + 1;
+            weeklyCounts[weekKey] = (weeklyCounts[weekKey] || 0) + 1;
+
+            const candidateDates = Array.isArray(event.candidate_dates) ? event.candidate_dates.length : 0;
+            totalCandidateDates += candidateDates;
+            totalAnswerCount += answerCountMap.get(event.id) || 0;
+        }
+
+        const averageAnswerCount = totalEvents > 0 ? totalAnswerCount / totalEvents : 0;
+        const averageCandidateDateCount = totalEvents > 0 ? totalCandidateDates / totalEvents : 0;
+
+        return NextResponse.json({
+            totalEvents,
+            dailyCounts,
+            weeklyCounts,
+            averageAnswerCount: Number(averageAnswerCount.toFixed(2)),
+            averageCandidateDateCount: Number(averageCandidateDateCount.toFixed(2)),
+        });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "failed" }, { status: 500 });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/answer-names/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+
+export async function GET(
+    _req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const supabase = createServerSupabase();
+
+        const { data, error } = await supabase
+            .from("answers")
+            .select("user_name")
+            .eq("event_id", id)
+            .order("user_name", { ascending: true });
+
+        if (error) {
+            console.error(error);
+            return NextResponse.json([], { status: 200 });
+        }
+
+        return NextResponse.json(data || []);
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json([], { status: 200 });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/answer-restore/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+
+function normalizeName(name?: string) {
+    return (name || "").trim().replace(/[ 　]/g, "").toLowerCase();
+}
+
+export async function POST(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const body = await req.json();
+
+        const userName = normalizeName(String(body?.user_name || ""));
+        const passCode = String(body?.pass_code || "").trim();
+
+        if (!userName || !passCode) {
+            return NextResponse.json({ restored: false });
+        }
+
+        const supabase = createServerSupabase();
+
+        const { data, error } = await supabase
+            .from("answers")
+            .select("pass_code,guest_suggestion,home_station,pass_route")
+            .eq("event_id", id)
+            .eq("user_name", userName)
+            .maybeSingle();
+
+        if (error || !data || data.pass_code !== passCode) {
+            return NextResponse.json({ restored: false });
+        }
+
+        return NextResponse.json({
+            restored: true,
+            guest_suggestion: data.guest_suggestion || "",
+            home_station: data.home_station || "",
+            pass_route: data.pass_route || "",
+        });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ restored: false });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/answer-upsert/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+
+function normalizeName(name?: string) {
+    return (name || "").trim().replace(/[ 　]/g, "").toLowerCase();
+}
+
+function validateUserName(name: string) {
+    const trimmed = name.trim();
+
+    if (!trimmed) return "名前を入力してください。";
+    if (/[ 　]/.test(trimmed)) return "名前にはスペースを入れずに入力してください。";
+    if (!/^[ぁ-んァ-ヶー一-龠々a-zA-Z]+$/.test(trimmed)) {
+        return "名前は、ひらがな・カタカナ・漢字・英字のみで入力してください。記号は使用できません。";
+    }
+    if (trimmed.length < 2) return "名前は2文字以上で入力してください。";
+
+    return "";
+}
+
+function splitConditionNames(text: string): string[] {
+    return text
+        .split(",")
+        .map((s) => normalizeName(s))
+        .filter(Boolean);
+}
+
+export async function POST(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const body = await req.json();
+
+        const rawUserName = String(body?.user_name || "");
+        const passCode = String(body?.pass_code || "").trim();
+        const selections = body?.selections || {};
+        const withUsers = Array.isArray(body?.withUsers) ? body.withUsers : [];
+        const withoutUsers = Array.isArray(body?.withoutUsers) ? body.withoutUsers : [];
+        const withUsersText = String(body?.withUsersText || "");
+        const withoutUsersText = String(body?.withoutUsersText || "");
+        const suggestion = String(body?.suggestion || "").trim();
+        const homeStation = normalizeName(String(body?.homeStation || ""));
+        const passFrom = normalizeName(String(body?.passFrom || ""));
+        const passTo = normalizeName(String(body?.passTo || ""));
+
+        const nameValidationError = validateUserName(rawUserName);
+        if (nameValidationError) {
+            return NextResponse.json({ error: nameValidationError }, { status: 400 });
+        }
+
+        if (!passCode) {
+            return NextResponse.json({ error: "修正用のパスコードを入力してください。" }, { status: 400 });
+        }
+
+        if (passCode.length < 4) {
+            return NextResponse.json({ error: "修正用のパスコードは4文字以上で入力してください。" }, { status: 400 });
+        }
+
+        const normalizedUserName = normalizeName(rawUserName);
+
+        const manualWith = splitConditionNames(withUsersText);
+        const manualWithout = splitConditionNames(withoutUsersText);
+        const selectedWith = withUsers.map((name: string) => normalizeName(name));
+        const selectedWithout = withoutUsers.map((name: string) => normalizeName(name));
+
+        const mergedWith = Array.from(new Set([...selectedWith, ...manualWith]));
+        const mergedWithout = Array.from(new Set([...selectedWithout, ...manualWithout])).filter(
+            (name) => !mergedWith.includes(name)
+        );
+
+        const combinedConditions = `with:${mergedWith.join(",")}|without:${mergedWithout.join(",")}`;
+        const passRoute = passFrom || passTo ? `${passFrom || ""}〜${passTo || ""}` : "";
+
+        const supabase = createServerSupabase();
+
+        const { data: eventData, error: eventError } = await supabase
+            .from("events")
+            .select("deadline")
+            .eq("id", id)
+            .single();
+
+        if (eventError || !eventData) {
+            return NextResponse.json({ error: "イベント情報の確認に失敗しました。" }, { status: 400 });
+        }
+
+        const isExpired = eventData.deadline
+            ? new Date().getTime() > new Date(eventData.deadline).setHours(23, 59, 50, 0)
+            : false;
+
+        if (isExpired) {
+            return NextResponse.json(
+                { error: "申し訳ありません。回答期限が過ぎているため送信できません。" },
+                { status: 400 }
+            );
+        }
+
+        const { data: existing, error: existingError } = await supabase
+            .from("answers")
+            .select("pass_code")
+            .eq("event_id", id)
+            .eq("user_name", normalizedUserName)
+            .maybeSingle();
+
+        if (existingError) {
+            console.error(existingError);
+            return NextResponse.json({ error: "既存回答の確認に失敗しました。" }, { status: 500 });
+        }
+
+        if (existing && existing.pass_code !== passCode) {
+            return NextResponse.json(
+                {
+                    error: "その名前は既に使用されています。修正する場合は、前回と同じパスコードを入力してください。",
+                },
+                { status: 400 }
+            );
+        }
+
+        const { error } = await supabase.from("answers").upsert(
+            [
+                {
+                    event_id: id,
+                    user_name: normalizedUserName,
+                    pass_code: passCode,
+                    selections,
+                    target_user_name: combinedConditions,
+                    guest_suggestion: suggestion,
+                    home_station: homeStation,
+                    pass_route: passRoute,
+                },
+            ],
+            { onConflict: "event_id,user_name" }
+        );
+
+        if (error) {
+            console.error(error);
+            return NextResponse.json({ error: "送信に失敗しました。" }, { status: 500 });
+        }
+
+        return NextResponse.json({ ok: true });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "送信に失敗しました。" }, { status: 500 });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/feedback/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+
+export async function POST(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const body = await req.json();
+
+        const feedbackType = String(body?.feedback_type || "").trim();
+        const feedbackText = String(body?.feedback_text || "").trim();
+        const contactInfo = String(body?.contact_info || "").trim();
+
+        if (!feedbackType || !feedbackText) {
+            return NextResponse.json({ error: "入力が不足しています。" }, { status: 400 });
+        }
+
+        const supabase = createServerSupabase();
+
+        const { error } = await supabase.from("beta_feedbacks").insert([
+            {
+                event_id: id,
+                feedback_type: feedbackType,
+                feedback_text: feedbackText,
+                contact_info: contactInfo || null,
+            },
+        ]);
+
+        if (error) {
+            console.error(error);
+            return NextResponse.json({ error: "送信に失敗しました。" }, { status: 500 });
+        }
+
+        return NextResponse.json({ ok: true });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "送信に失敗しました。" }, { status: 500 });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/host-data/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+import { getHostCookieName, safeEquals, signHostSession } from "../../../../lib/host-session";
+
+export async function GET(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const cookieValue = req.cookies.get(getHostCookieName(id))?.value;
+
+        if (!cookieValue) {
+            return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+        }
+
+        const supabase = createServerSupabase();
+
+        const { data: eventData, error: eventError } = await supabase
+            .from("events")
+            .select("id,title,candidate_dates,password")
+            .eq("id", id)
+            .single();
+
+        if (eventError || !eventData) {
+            return NextResponse.json({ error: "not found" }, { status: 404 });
+        }
+
+        const expected = signHostSession(id, eventData.password);
+        if (!safeEquals(cookieValue, expected)) {
+            return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+        }
+
+        const { data: answers, error: answersError } = await supabase
+            .from("answers")
+            .select("user_name,selections,target_user_name,guest_suggestion")
+            .eq("event_id", id)
+            .order("user_name", { ascending: true });
+
+        if (answersError) {
+            console.error(answersError);
+            return NextResponse.json({ error: "failed" }, { status: 500 });
+        }
+
+        return NextResponse.json({
+            event: {
+                id: eventData.id,
+                title: eventData.title,
+                candidate_dates: eventData.candidate_dates,
+            },
+            answers: answers || [],
+        });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "failed" }, { status: 500 });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/host-login/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+import { getHostCookieName, signHostSession } from "../../../../lib/host-session";
+
+export async function POST(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const body = await req.json();
+        const password = String(body?.password || "").trim();
+
+        if (!password) {
+            return NextResponse.json({ error: "パスワードを入力してください。" }, { status: 400 });
+        }
+
+        const supabase = createServerSupabase();
+
+        const { data, error } = await supabase
+            .from("events")
+            .select("password")
+            .eq("id", id)
+            .single();
+
+        if (error || !data) {
+            return NextResponse.json({ error: "イベントが見つかりません。" }, { status: 404 });
+        }
+
+        if (data.password !== password) {
+            return NextResponse.json({ error: "パスワードが違います。" }, { status: 401 });
+        }
+
+        const token = signHostSession(id, password);
+        const res = NextResponse.json({ ok: true });
+
+        res.cookies.set({
+            name: getHostCookieName(id),
+            value: token,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7,
+        });
+
+        return res;
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "ログインに失敗しました。" }, { status: 500 });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/log/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+
+export async function POST(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const body = await req.json();
+
+        const actionType = String(body?.action_type || "").trim();
+        const actionDetail = String(body?.action_detail || "").trim();
+
+        if (!actionType) {
+            return NextResponse.json({ error: "action_type is required" }, { status: 400 });
+        }
+
+        const supabase = createServerSupabase();
+
+        const { error } = await supabase.from("beta_usage_logs").insert([
+            {
+                event_id: id,
+                action_type: actionType,
+                action_detail: actionDetail || null,
+            },
+        ]);
+
+        if (error) {
+            console.error(error);
+            return NextResponse.json({ error: "failed" }, { status: 500 });
+        }
+
+        return NextResponse.json({ ok: true });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "failed" }, { status: 500 });
+    }
+}
+</file>
+
+<file path="src/app/api/events/[id]/public/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+
+export async function GET(
+    _req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const supabase = createServerSupabase();
+
+        const { data, error } = await supabase
+            .from("events")
+            .select("id,title,deadline,candidate_dates,plan_description")
+            .eq("id", id)
+            .single();
+
+        if (error || !data) {
+            return NextResponse.json(
+                { error: "イベントが見つかりません。" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(data);
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json(
+            { error: "イベント情報の取得に失敗しました。" },
+            { status: 500 }
+        );
+    }
+}
+</file>
+
+<file path="src/app/api/events/create/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../lib/supabase/server";
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+
+        const title = String(body?.title || "").trim();
+        const description = String(body?.description || "").trim();
+        const password = String(body?.password || "").trim();
+        const deadline = String(body?.deadline || "").trim();
+        const candidateDates = Array.isArray(body?.candidate_dates)
+            ? body.candidate_dates.map((v: unknown) => String(v))
+            : [];
+
+        if (!title || !password || !deadline || candidateDates.length === 0) {
+            return NextResponse.json(
+                { error: "入力が不足しています。" },
+                { status: 400 }
+            );
+        }
+
+        const supabase = createServerSupabase();
+
+        const { data, error } = await supabase
+            .from("events")
+            .insert([
+                {
+                    title,
+                    description: description || title,
+                    plan_description: description || "",
+                    password,
+                    deadline,
+                    candidate_dates: candidateDates,
+                },
+            ])
+            .select("id")
+            .single();
+
+        if (error || !data) {
+            console.error(error);
+            return NextResponse.json(
+                { error: "イベント作成に失敗しました。" },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json({ id: data.id });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json(
+            { error: "イベント作成に失敗しました。" },
+            { status: 500 }
+        );
+    }
+}
+</file>
+
+<file path="src/app/api/premium/area-suggest/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+
+type Participant = {
+    name: string;
+    station?: string;
+    pass_route?: string;
+};
+
+type Filters = {
+    budget?: "none" | "low" | "mid" | "high";
+    environment?: "none" | "indoor" | "outdoor";
+    kind?: "none" | "meal" | "cafe" | "drink" | "park" | "activity";
+    needs?: string[];
+};
+
+function normalizeText(value?: string) {
+    return (value || "").trim().replace(/\s+/g, " ");
+}
+
+function parsePassRoute(route?: string) {
+    const raw = normalizeText(route);
+    if (!raw) {
+        return { from: "", to: "" };
+    }
+
+    const parts = raw.split(/[〜~\-－→]/).map((s) => s.trim()).filter(Boolean);
+
+    return {
+        from: parts[0] || "",
+        to: parts[1] || "",
+    };
+}
+
+function kindLabel(kind?: Filters["kind"]) {
+    switch (kind) {
+        case "meal":
+            return "ごはん向き";
+        case "cafe":
+            return "カフェ向き";
+        case "drink":
+            return "飲み向き";
+        case "park":
+            return "公園 / 散歩向き";
+        case "activity":
+            return "遊び / 体験向き";
+        default:
+            return "バランス型";
+    }
+}
+
+function environmentLabel(environment?: Filters["environment"]) {
+    switch (environment) {
+        case "indoor":
+            return "屋内寄り";
+        case "outdoor":
+            return "屋外寄り";
+        default:
+            return "環境指定なし";
+    }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+        const participants = (body?.participants || []) as Participant[];
+        const filters = (body?.filters || {}) as Filters;
+
+        if (!Array.isArray(participants) || participants.length === 0) {
+            return NextResponse.json(
+                { error: "参加者情報がありません。" },
+                { status: 400 }
+            );
+        }
+
+        const candidateMap = new Map<
+            string,
+            {
+                timeScore: number;
+                costScore: number;
+                supportCount: number;
+                routeMatchCount: number;
+            }
+        >();
+
+        const participantCount = participants.length;
+
+        for (const p of participants) {
+            const station = normalizeText(p.station);
+            const route = parsePassRoute(p.pass_route);
+            const seenForSupport = new Set<string>();
+
+            const addScore = (
+                candidate: string,
+                timeScoreDelta: number,
+                costScoreDelta: number,
+                isRouteMatch: boolean
+            ) => {
+                const key = normalizeText(candidate);
+                if (!key) return;
+
+                const current = candidateMap.get(key) || {
+                    timeScore: 0,
+                    costScore: 0,
+                    supportCount: 0,
+                    routeMatchCount: 0,
+                };
+
+                current.timeScore += timeScoreDelta;
+                current.costScore += costScoreDelta;
+
+                if (!seenForSupport.has(key)) {
+                    current.supportCount += 1;
+                    seenForSupport.add(key);
+                }
+
+                if (isRouteMatch) {
+                    current.routeMatchCount += 1;
+                }
+
+                candidateMap.set(key, current);
+            };
+
+            if (station) {
+                addScore(station, 5, 2, false);
+            }
+
+            if (route.from) {
+                addScore(route.from, 3, 5, true);
+            }
+
+            if (route.to) {
+                addScore(route.to, 3, 5, true);
+            }
+        }
+
+        const candidates = Array.from(candidateMap.entries())
+            .map(([areaName, score]) => {
+                const overallScore = score.timeScore + score.costScore + score.supportCount * 2;
+
+                const badges = [
+                    score.routeMatchCount >= Math.max(1, Math.floor(participantCount / 2))
+                        ? "定期区間を活かしやすい"
+                        : "全体バランス重視",
+                    score.timeScore >= score.costScore ? "時間重視寄り" : "料金重視寄り",
+                    kindLabel(filters.kind),
+                    environmentLabel(filters.environment),
+                ];
+
+                const reasonParts: string[] = [];
+
+                if (score.supportCount >= 2) {
+                    reasonParts.push("複数人の入力に共通して出てきた候補です");
+                } else {
+                    reasonParts.push("参加予定者の入力情報から候補に上がったエリアです");
+                }
+
+                if (score.routeMatchCount > 0) {
+                    reasonParts.push("定期区間の端点としても一致しやすいです");
+                }
+
+                if (filters.needs?.includes("childFriendly")) {
+                    reasonParts.push("子連れ向きの場所探しにも広げやすい想定です");
+                }
+
+                if (filters.needs?.includes("rainFriendly") && filters.environment !== "outdoor") {
+                    reasonParts.push("雨の日でも選択肢を持ちやすい前提で使えます");
+                }
+
+                return {
+                    areaKey: areaName,
+                    areaName: `${areaName}周辺`,
+                    badges: Array.from(new Set(badges)),
+                    reason: reasonParts.join("。"),
+                    scoreLabel: `参加者の交通情報をもとに、時間・料金・共通度を合わせて候補化しています`,
+                    overallScore,
+                };
+            })
+            .sort((a, b) => b.overallScore - a.overallScore)
+            .slice(0, 3)
+            .map(({ overallScore, ...rest }) => rest);
+
+        return NextResponse.json({
+            areas: candidates,
+        });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json(
+            { error: "エリア候補の提案に失敗しました。" },
+            { status: 500 }
+        );
+    }
+}
+</file>
+
+<file path="src/app/api/premium/place-suggest/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(_req: NextRequest) {
+    return NextResponse.json(
+        {
+            error: "場所決めサポートは現在開発中です。公開までしばらくお待ちください。",
+            code: "PREMIUM_PLACE_SUGGEST_DISABLED",
+        },
+        { status: 503 }
+    );
+}
+</file>
+
+<file path="src/app/api/suggest/route.ts">
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
+
+type Participant = {
+    name?: string;
+    station?: string;
+    pass_route?: string;
+};
+
+type TimeSuggestItem = {
+    station: string;
+    avg_minutes: number;
+};
+
+type CostSuggestItem = {
+    station: string;
+    avg_cost_yen: number;
+};
+
+type SuggestResponse = {
+    time_based: TimeSuggestItem[];
+    cost_based: CostSuggestItem[];
+};
+
+function extractTextFromCandidate(candidate: any): string {
+    const parts = candidate?.content?.parts;
+    if (!Array.isArray(parts)) return "";
+
+    return parts
+        .map((part: any) => (typeof part?.text === "string" ? part.text : ""))
+        .join("")
+        .trim();
+}
+
+function parseRetrySeconds(message: string): number | null {
+    const match = message.match(/Please retry in ([0-9.]+)s/i);
+    if (!match) return null;
+    const sec = Math.ceil(Number(match[1]));
+    return Number.isFinite(sec) ? sec : null;
+}
+
+function parseLineResult(text: string) {
+    const cleaned = text
+        .replace(/```[\s\S]*?```/g, "")
+        .replace(/^Here is.*$/gim, "")
+        .replace(/^Result:.*$/gim, "")
+        .trim();
+
+    const line = cleaned.split("\n").find((l) => l.includes("|"))?.trim() || "";
+    const [stationRaw, valueRaw] = line.split("|").map((s) => s.trim());
+
+    if (!stationRaw || !valueRaw) {
+        throw new Error("AIの返答を解析できませんでした");
+    }
+
+    const value = Number(valueRaw.replace(/[^\d.-]/g, ""));
+    if (!Number.isFinite(value)) {
+        throw new Error("AIの数値を解析できませんでした");
+    }
+
+    return {
+        station: stationRaw,
+        value: Math.round(value),
+    };
+}
+
+async function runGemini({
+    apiKey,
+    prompt,
+}: {
+    apiKey: string;
+    prompt: string;
+}) {
+    const response = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": apiKey,
+            },
+            body: JSON.stringify({
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.1,
+                    candidateCount: 1,
+                    maxOutputTokens: 128,
+                },
+            }),
+            cache: "no-store",
+        }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        const detail = result?.error?.message || result?.message || "unknown error";
+        const retryAfterSec = parseRetrySeconds(detail);
+        const isQuotaError =
+            response.status === 429 ||
+            /quota/i.test(detail) ||
+            /rate limit/i.test(detail) ||
+            /exceeded your current quota/i.test(detail);
+
+        if (isQuotaError) {
+            const err: any = new Error(
+                retryAfterSec
+                    ? `しばらく待ってから再試行してください（約${retryAfterSec}秒後）`
+                    : "しばらく待ってから再試行してください"
+            );
+            err.code = "quota_exceeded";
+            err.retryAfterSec = retryAfterSec;
+            throw err;
+        }
+
+        const err: any = new Error(detail);
+        err.code = "api_error";
+        throw err;
+    }
+
+    const candidate = result?.candidates?.[0];
+    if (!candidate) {
+        const err: any = new Error("candidates が空でした");
+        err.code = "empty_candidates";
+        throw err;
+    }
+
+    const text = extractTextFromCandidate(candidate);
+    const finishReason = candidate?.finishReason;
+
+    if (!text) {
+        const err: any = new Error(
+            finishReason ? `finishReason: ${finishReason}` : "parts.text が空でした"
+        );
+        err.code = "empty_text";
+        throw err;
+    }
+
+    return text;
+}
+
+export async function POST(req: Request) {
+    try {
+        const body = await req.json();
+        const participants = (body?.participants || []) as Participant[];
+
+        if (!Array.isArray(participants) || participants.length === 0) {
+            return NextResponse.json({ error: "参加者情報がありません" }, { status: 400 });
+        }
+
+        const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+        if (!apiKey) {
+            return NextResponse.json({ error: "APIキーが設定されていません" }, { status: 500 });
+        }
+
+        const cleanedParticipants = participants
+            .map((p) => ({
+                name: (p.name || "").trim(),
+                station: (p.station || "").trim(),
+                pass_route: (p.pass_route || "").trim(),
+            }))
+            .filter((p) => p.name || p.station || p.pass_route);
+
+        if (cleanedParticipants.length === 0) {
+            return NextResponse.json({ error: "有効な参加者情報がありません" }, { status: 400 });
+        }
+
+        const participantsInfo = cleanedParticipants
+            .map(
+                (p) =>
+                    `- 名前: ${p.name || "参加者"}, 最寄り駅: ${p.station || "不明"}, 定期区間: ${p.pass_route || "なし"}`
+            )
+            .join("\n");
+
+        const participantsInfoForTime = cleanedParticipants
+            .map(
+                (p) =>
+                    `- 名前: ${p.name || "参加者"}, 最寄り駅: ${p.station || "不明"}`
+            )
+            .join("\n");
+
+        const timePrompt = `
+以下の参加者情報から、移動時間のバランスがよい集合駅を1つだけ選んでください。
+時間の計算は必ず「最寄り駅」から考えてください。
+定期区間は時間計算に使わないでください。
+
+出力は必ず1行だけ、次の形式にしてください。
+
+駅名|平均分数
+
+説明文は禁止
+前置き禁止
+Markdown禁止
+JSON禁止
+
+参加者情報:
+${participantsInfoForTime}
+`.trim();
+
+        const costPrompt = `
+以下の参加者情報から、交通費のバランスがよい集合駅を1つだけ選んでください。
+出力は必ず1行だけ、次の形式にしてください。
+
+駅名|平均円数
+
+説明文は禁止
+前置き禁止
+Markdown禁止
+JSON禁止
+
+参加者情報:
+${participantsInfo}
+    `.trim();
+
+        const timeText = await runGemini({ apiKey, prompt: timePrompt });
+        const costText = await runGemini({ apiKey, prompt: costPrompt });
+
+        const timeParsed = parseLineResult(timeText);
+        const costParsed = parseLineResult(costText);
+
+        const responseJson: SuggestResponse = {
+            time_based: [
+                {
+                    station: timeParsed.station,
+                    avg_minutes: timeParsed.value,
+                },
+            ],
+            cost_based: [
+                {
+                    station: costParsed.station,
+                    avg_cost_yen: costParsed.value,
+                },
+            ],
+        };
+
+        return NextResponse.json(responseJson);
+    } catch (error: any) {
+        if (error?.code === "quota_exceeded") {
+            return NextResponse.json(
+                {
+                    error: "AIの無料枠上限に達しています",
+                    detail: error.message,
+                    retryAfterSec: error.retryAfterSec ?? null,
+                    errorType: "quota_exceeded",
+                },
+                { status: 429 }
+            );
+        }
+
+        if (
+            error?.code === "api_error" ||
+            error?.code === "empty_candidates" ||
+            error?.code === "empty_text"
+        ) {
+            return NextResponse.json(
+                {
+                    error: "AI APIの呼び出しに失敗しました",
+                    detail: error.message,
+                    errorType: error.code,
+                },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json(
+            {
+                error: "AIの解析に失敗しました",
+                detail: error?.message || "unknown error",
+                errorType: "parse_error",
+            },
+            { status: 500 }
+        );
+    }
+}
+</file>
+
+<file path="src/app/event/[id]/host/page.tsx">
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+
+type AnswerRow = {
+    user_name: string;
+    selections?: Record<string, string>;
+    target_user_name?: string;
+    guest_suggestion?: string;
+};
+
+type DateSummaryItem = {
+    rawDate: string;
+    label: string;
+    okCount: number;
+    okUsers: string[];
+    ngUsers: string[];
+};
+
+type PremiumFilterState = {
+    kind: "meal" | "cafe" | "drink" | "park" | "activity";
+    environment: "none" | "indoor" | "outdoor";
+    needs: string[];
+};
+
+type FeedbackType = "bug" | "improvement" | "impression" | "other";
+
+function formatDateLabel(dateStr: string) {
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return dateStr;
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+function normalizeName(name?: string) {
+    return (name || "")
+        .trim()
+        .replace(/[ 　]/g, "")
+        .toLowerCase();
+}
+
+function uniqueNames(names: string[]) {
+    const map = new Map<string, string>();
+    for (const name of names) {
+        const key = normalizeName(name);
+        if (!key) continue;
+        if (!map.has(key)) map.set(key, name);
+    }
+    return Array.from(map.values());
+}
+
+function parseConditions(target?: string) {
+    const base = { with: [] as string[], without: [] as string[] };
+    if (!target) return base;
+
+    const withMatch = target.match(/(?:^|\|)with:([^|]*)/);
+    const withoutMatch = target.match(/(?:^|\|)without:([^|]*)/);
+
+    const withNames = (withMatch?.[1] || "")
+        .split(",")
+        .map((s) => normalizeName(s))
+        .filter(Boolean);
+
+    const withoutNames = (withoutMatch?.[1] || "")
+        .split(",")
+        .map((s) => normalizeName(s))
+        .filter(Boolean);
+
+    return {
+        with: Array.from(new Set(withNames)),
+        without: Array.from(new Set(withoutNames)).filter((name) => !withNames.includes(name)),
+    };
+}
+
+function computeEffectiveStatus(date: string, answers: AnswerRow[]) {
+    const normalizedNameToDisplayName = new Map<string, string>();
+    const baseOkMap = new Map<string, boolean>();
+
+    answers.forEach((a) => {
+        const normalized = normalizeName(a.user_name);
+        if (!normalized) return;
+        normalizedNameToDisplayName.set(normalized, a.user_name);
+        baseOkMap.set(normalized, a.selections?.[date] === "ok");
+    });
+
+    const effectiveMap = new Map(baseOkMap);
+
+    let changed = true;
+    let guard = 0;
+
+    while (changed && guard < 20) {
+        changed = false;
+        guard += 1;
+
+        for (const answer of answers) {
+            const selfName = normalizeName(answer.user_name);
+            if (!selfName) continue;
+
+            const current = effectiveMap.get(selfName) === true;
+            if (!current) continue;
+
+            const { with: withUsers, without: withoutUsers } = parseConditions(answer.target_user_name);
+
+            const withBlocked =
+                withUsers.length > 0 &&
+                withUsers.some((name) => effectiveMap.get(name) !== true);
+
+            const withoutBlocked =
+                withoutUsers.length > 0 &&
+                withoutUsers.some((name) => effectiveMap.get(name) === true);
+
+            if (withBlocked || withoutBlocked) {
+                effectiveMap.set(selfName, false);
+                changed = true;
+            }
+        }
+    }
+
+    const okUsers = Array.from(effectiveMap.entries())
+        .filter(([, isOk]) => isOk === true)
+        .map(([normalizedName]) => normalizedNameToDisplayName.get(normalizedName) || normalizedName);
+
+    const ngUsers = Array.from(effectiveMap.entries())
+        .filter(([, isOk]) => isOk !== true)
+        .map(([normalizedName]) => normalizedNameToDisplayName.get(normalizedName) || normalizedName);
+
+    return {
+        okUsers: uniqueNames(okUsers),
+        ngUsers: uniqueNames(ngUsers),
+    };
+}
+
+function buildBasicMessageSet(eventTitle: string, selectedDate: string, selectedUsers: string[]) {
+    const label = formatDateLabel(selectedDate);
+
+    return {
+        confirmMessage: `みなさま
+日程調整のご回答ありがとうございました！
+
+${eventTitle}は ${label} で進めさせていただければと思います。
+ご参加予定の方は以下のみなさまです。
+${selectedUsers.length > 0 ? `・${selectedUsers.join("\n・")}` : "・該当なし"}
+
+当日はどうぞよろしくお願いいたします！`,
+        sorryMessage: `みなさま
+日程調整のご回答ありがとうございました！
+
+今回は ${eventTitle} を ${label} で進めることになりました。
+ご都合が合わなかった方もいらっしゃる中での調整となり申し訳ありません。
+
+また別の機会にもぜひご一緒できればうれしいです。`,
+        requestMessage: `みなさま
+日程調整のご回答ありがとうございます！
+
+現時点では ${eventTitle} の日程を ${label} で進める案が有力です。
+もし難しい点や調整したい点があれば、お手数ですがご連絡いただけますと助かります。
+
+どうぞよろしくお願いいたします。`,
+        cancelMessage: `みなさま
+日程調整のご回答ありがとうございました。
+
+今回は全体の都合を踏まえ、${eventTitle} の開催は一旦見送ることにいたしました。
+せっかくご回答いただいたのに申し訳ありません。
+
+また改めて企画できればと思っておりますので、その際はぜひよろしくお願いいたします。`,
+    };
+}
+
+function getMessageCardStyle(kind: "confirm" | "sorry" | "request" | "cancel") {
+    switch (kind) {
+        case "confirm":
+            return { bg: "#edf7ff", border: "#b6ddff", textareaBg: "#ffffff" };
+        case "sorry":
+            return { bg: "#f4f4f5", border: "#cfcfd4", textareaBg: "#ffffff" };
+        case "request":
+            return { bg: "#fff9db", border: "#f4df82", textareaBg: "#ffffff" };
+        case "cancel":
+            return { bg: "#fff1f1", border: "#f2b8b8", textareaBg: "#ffffff" };
+    }
+}
+
+export default function HostPage() {
+    const params = useParams();
+    const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
+
+    const [event, setEvent] = useState<any>(null);
+    const [answers, setAnswers] = useState<AnswerRow[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [hostPass, setHostPass] = useState("");
+    const [authenticated, setAuthenticated] = useState(false);
+
+    const [selectedDateForMessage, setSelectedDateForMessage] = useState("");
+
+    const [premiumFilters, setPremiumFilters] = useState<PremiumFilterState>({
+        kind: "meal",
+        environment: "none",
+        needs: [],
+    });
+
+    const [premiumInfoMessage, setPremiumInfoMessage] = useState("");
+    const [interestLoading, setInterestLoading] = useState(false);
+
+    const [feedbackType, setFeedbackType] = useState<FeedbackType>("improvement");
+    const [feedbackText, setFeedbackText] = useState("");
+    const [contactInfo, setContactInfo] = useState("");
+    const [feedbackLoading, setFeedbackLoading] = useState(false);
+    const [feedbackError, setFeedbackError] = useState("");
+    const [feedbackSuccess, setFeedbackSuccess] = useState("");
+
+    async function logUsage(actionType: string, actionDetail?: string) {
+        if (!eventId) return;
+        try {
+            await fetch(`/api/events/${eventId}/log`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action_type: actionType,
+                    action_detail: actionDetail || "",
+                }),
+            });
+        } catch (error) {
+            console.error("usage log error:", error);
+        }
+    }
+
+    const fetchHostData = async () => {
+        if (!eventId) return false;
+
+        const res = await fetch(`/api/events/${eventId}/host-data`, {
+            cache: "no-store",
+        });
+
+        if (res.status === 401) {
+            setAuthenticated(false);
+            setLoading(false);
+            return false;
+        }
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            setLoading(false);
+            return false;
+        }
+
+        setEvent(data.event);
+        setAnswers(data.answers || []);
+        setAuthenticated(true);
+        setLoading(false);
+        return true;
+    };
+
+    useEffect(() => {
+        fetchHostData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [eventId]);
+
+    useEffect(() => {
+        if (!authenticated) return;
+        logUsage("host_page_opened", "host page viewed");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authenticated]);
+
+    const dateSummary: DateSummaryItem[] = useMemo(() => {
+        if (!event?.candidate_dates) return [];
+
+        return (event.candidate_dates as string[])
+            .map((date: string) => {
+                const { okUsers, ngUsers } = computeEffectiveStatus(date, answers);
+                return {
+                    rawDate: date,
+                    label: formatDateLabel(date),
+                    okCount: okUsers.length,
+                    okUsers,
+                    ngUsers,
+                };
+            })
+            .sort((a, b) => {
+                if (b.okCount !== a.okCount) return b.okCount - a.okCount;
+                return new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime();
+            });
+    }, [event, answers]);
+
+    useEffect(() => {
+        if (!selectedDateForMessage && dateSummary.length > 0) {
+            setSelectedDateForMessage(dateSummary[0].rawDate);
+        }
+    }, [dateSummary, selectedDateForMessage]);
+
+    const selectedSummary = useMemo(() => {
+        return dateSummary.find((d) => d.rawDate === selectedDateForMessage) || null;
+    }, [dateSummary, selectedDateForMessage]);
+
+    const basicMessageSet = useMemo(() => {
+        if (!event || !selectedSummary) return null;
+        return buildBasicMessageSet(event.title, selectedSummary.rawDate, selectedSummary.okUsers);
+    }, [event, selectedSummary]);
+
+    const handleLogin = async () => {
+        if (!eventId) return;
+
+        const res = await fetch(`/api/events/${eventId}/host-login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: hostPass }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data?.error || "パスワードが違います");
+            return;
+        }
+
+        await fetchHostData();
+    };
+
+    const toggleNeed = (value: string) => {
+        setPremiumFilters((prev) => {
+            const exists = prev.needs.includes(value);
+            return {
+                ...prev,
+                needs: exists ? prev.needs.filter((v) => v !== value) : [...prev.needs, value],
+            };
+        });
+    };
+
+    const handleInterestClick = async () => {
+        setPremiumInfoMessage("");
+        setInterestLoading(true);
+
+        try {
+            await logUsage(
+                "place_suggest_interest_clicked",
+                JSON.stringify({
+                    selectedDate: selectedSummary?.rawDate || "",
+                    kind: premiumFilters.kind,
+                    environment: premiumFilters.environment,
+                    needs: premiumFilters.needs,
+                    participantCount: selectedSummary?.okUsers.length || 0,
+                })
+            );
+
+            setPremiumInfoMessage("ありがとうございます。場所決めサポートへの関心として記録しました。公開準備の参考にします。");
+        } catch {
+            setPremiumInfoMessage("反応の記録に失敗しました。時間をおいて再度お試しください。");
+        } finally {
+            setInterestLoading(false);
+        }
+    };
+
+    const copyText = async (text: string, kind: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            await logUsage("message_copied", kind);
+            alert("コピーしました");
+        } catch {
+            alert("コピーに失敗しました");
+        }
+    };
+
+    const handleSubmitFeedback = async () => {
+        setFeedbackError("");
+        setFeedbackSuccess("");
+
+        if (!eventId) {
+            setFeedbackError("イベントIDが取得できませんでした。");
+            return;
+        }
+
+        if (!feedbackText.trim()) {
+            setFeedbackError("フィードバック内容を入力してください。");
+            return;
+        }
+
+        try {
+            setFeedbackLoading(true);
+
+            const res = await fetch(`/api/events/${eventId}/feedback`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    feedback_type: feedbackType,
+                    feedback_text: feedbackText.trim(),
+                    contact_info: contactInfo.trim(),
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data?.error || "failed");
+            }
+
+            await logUsage(
+                "feedback_sent",
+                JSON.stringify({
+                    feedbackType,
+                    hasContactInfo: !!contactInfo.trim(),
+                })
+            );
+
+            setFeedbackSuccess("フィードバックを送信しました。ありがとうございます。");
+            setFeedbackText("");
+            setContactInfo("");
+            setFeedbackType("improvement");
+        } catch {
+            setFeedbackError("フィードバック送信に失敗しました。時間をおいて再度お試しください。");
+        } finally {
+            setFeedbackLoading(false);
+        }
+    };
+
+    if (loading) {
+        return <div style={{ padding: "40px", textAlign: "center" }}>読み込み中...</div>;
+    }
+
+    if (!authenticated) {
+        return (
+            <main
+                style={{
+                    minHeight: "100vh",
+                    background: "#fff",
+                    color: "#111",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "20px",
+                    fontFamily: "sans-serif",
+                }}
+            >
+                <div
+                    style={{
+                        width: "100%",
+                        maxWidth: "420px",
+                        border: "1px solid #eee",
+                        borderRadius: "16px",
+                        padding: "24px",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+                    }}
+                >
+                    <h1 style={{ fontSize: "22px", marginBottom: "8px" }}>ホスト画面</h1>
+                    <p style={{ color: "#666", fontSize: "14px", marginBottom: "16px" }}>
+                        ホスト画面に入るにはパスワードを入力してください
+                    </p>
+                    <input
+                        type="password"
+                        value={hostPass}
+                        onChange={(e) => setHostPass(e.target.value)}
+                        placeholder="Host password"
+                        style={{
+                            width: "100%",
+                            padding: "12px",
+                            borderRadius: "10px",
+                            border: "1px solid #ccc",
+                            marginBottom: "12px",
+                        }}
+                    />
+                    <button
+                        type="button"
+                        onClick={handleLogin}
+                        style={{
+                            width: "100%",
+                            padding: "12px",
+                            borderRadius: "10px",
+                            border: "none",
+                            background: "#111",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                        }}
+                    >
+                        ログイン
+                    </button>
+                </div>
+            </main>
+        );
+    }
+
+    return (
+        <main
+            style={{
+                maxWidth: "980px",
+                margin: "0 auto",
+                padding: "20px",
+                fontFamily: "sans-serif",
+                backgroundColor: "white",
+                color: "black",
+                minHeight: "100vh",
+            }}
+        >
+            <h1 style={{ fontSize: "28px", fontWeight: "bold", marginBottom: "8px" }}>
+                {event.title}
+            </h1>
+            <p style={{ color: "#666", marginBottom: "24px" }}>回答数：{answers.length}名</p>
+
+            <section
+                style={{
+                    border: "1px solid #eee",
+                    borderRadius: "14px",
+                    padding: "18px",
+                    marginBottom: "24px",
+                    background: "#fafafa",
+                }}
+            >
+                <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "14px" }}>
+                    📅 日程集計
+                </h2>
+
+                <div style={{ display: "grid", gap: "10px" }}>
+                    {dateSummary.map((item) => (
+                        <button
+                            key={item.rawDate}
+                            type="button"
+                            onClick={() => {
+                                setSelectedDateForMessage(item.rawDate);
+                                setPremiumInfoMessage("");
+                            }}
+                            style={{
+                                textAlign: "left",
+                                border:
+                                    selectedDateForMessage === item.rawDate ? "2px solid #111" : "1px solid #ddd",
+                                borderRadius: "10px",
+                                padding: "12px",
+                                background: "#fff",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
+                                {item.label}　○ {item.okCount}名
+                            </div>
+                            <div style={{ fontSize: "13px", color: "#444" }}>
+                                {item.okUsers.length ? item.okUsers.join("、") : "該当なし"}
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            <section
+                style={{
+                    border: "1px solid #eee",
+                    borderRadius: "14px",
+                    padding: "18px",
+                    marginBottom: "24px",
+                    background: "#fffdf8",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: "12px",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        marginBottom: "14px",
+                    }}
+                >
+                    <div>
+                        <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "4px" }}>
+                            📍 場所決めサポート
+                        </h2>
+                        <p style={{ color: "#666", fontSize: "13px" }}>
+                            候補精度を改善中のため、現在は公開前の調整段階です
+                        </p>
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#444" }}>
+                        対象日程：{selectedSummary ? selectedSummary.label : "未選択"}
+                    </div>
+                </div>
+
+                <div
+                    style={{
+                        marginBottom: "16px",
+                        padding: "12px",
+                        borderRadius: "10px",
+                        background: "#fff7e6",
+                        border: "1px solid #f2d49b",
+                        fontSize: "13px",
+                        lineHeight: 1.8,
+                        color: "#6b4f1d",
+                    }}
+                >
+                    <div style={{ fontWeight: "bold", marginBottom: "6px" }}>
+                        β調整中 / 有料サービス開発中
+                    </div>
+                    <div>・現在、この機能はまだご利用いただけません</div>
+                    <div>・候補精度や表示内容を改善してから公開予定です</div>
+                    <div>・興味がある場合は下のボタンやフィードバックからご意見を残していただけると助かります</div>
+                </div>
+
+                <div style={{ display: "grid", gap: "14px", marginBottom: "18px", opacity: 0.72 }}>
+                    <div>
+                        <div style={{ fontWeight: "bold", fontSize: "14px", marginBottom: "8px" }}>種類</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                            {[
+                                { value: "meal", label: "ごはん" },
+                                { value: "cafe", label: "カフェ" },
+                                { value: "drink", label: "飲み会" },
+                                { value: "park", label: "公園（屋外）" },
+                                { value: "activity", label: "アクティビティ" },
+                            ].map((item) => (
+                                <button
+                                    key={item.value}
+                                    type="button"
+                                    onClick={() =>
+                                        setPremiumFilters((prev) => ({
+                                            ...prev,
+                                            kind: item.value as PremiumFilterState["kind"],
+                                        }))
+                                    }
+                                    style={{
+                                        border: "1px solid #ddd",
+                                        borderRadius: "999px",
+                                        padding: "8px 12px",
+                                        background: premiumFilters.kind === item.value ? "#111" : "#fff",
+                                        color: premiumFilters.kind === item.value ? "#fff" : "#111",
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                    }}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style={{ fontWeight: "bold", fontSize: "14px", marginBottom: "8px" }}>屋内 / 屋外</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                            {[
+                                { value: "none", label: "指定なし" },
+                                { value: "indoor", label: "屋内寄り" },
+                                { value: "outdoor", label: "屋外寄り" },
+                            ].map((item) => (
+                                <button
+                                    key={item.value}
+                                    type="button"
+                                    onClick={() =>
+                                        setPremiumFilters((prev) => ({
+                                            ...prev,
+                                            environment: item.value as PremiumFilterState["environment"],
+                                        }))
+                                    }
+                                    style={{
+                                        border: "1px solid #ddd",
+                                        borderRadius: "999px",
+                                        padding: "8px 12px",
+                                        background: premiumFilters.environment === item.value ? "#111" : "#fff",
+                                        color: premiumFilters.environment === item.value ? "#fff" : "#111",
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                    }}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style={{ fontWeight: "bold", fontSize: "14px", marginBottom: "8px" }}>配慮したい条件</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                            {[
+                                { value: "childFriendly", label: "子連れ向き" },
+                                { value: "rainFriendly", label: "雨でも動きやすい" },
+                                { value: "stayLong", label: "長居しやすい" },
+                                { value: "quiet", label: "静かめ" },
+                            ].map((item) => (
+                                <button
+                                    key={item.value}
+                                    type="button"
+                                    onClick={() => toggleNeed(item.value)}
+                                    style={{
+                                        border: "1px solid #ddd",
+                                        borderRadius: "999px",
+                                        padding: "8px 12px",
+                                        background: premiumFilters.needs.includes(item.value) ? "#111" : "#fff",
+                                        color: premiumFilters.needs.includes(item.value) ? "#fff" : "#111",
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                    }}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "16px" }}>
+                    <button
+                        type="button"
+                        disabled
+                        style={{
+                            padding: "12px 18px",
+                            borderRadius: "10px",
+                            border: "none",
+                            backgroundColor: "#b8b8b8",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            cursor: "not-allowed",
+                        }}
+                    >
+                        場所候補を提案する（有料サービス開発中）
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleInterestClick}
+                        disabled={interestLoading}
+                        style={{
+                            padding: "12px 18px",
+                            borderRadius: "10px",
+                            border: "1px solid #ddd",
+                            backgroundColor: "#fff",
+                            color: "#111",
+                            fontWeight: "bold",
+                            cursor: interestLoading ? "default" : "pointer",
+                        }}
+                    >
+                        {interestLoading ? "記録中..." : "この機能に興味あり"}
+                    </button>
+                </div>
+
+                {premiumInfoMessage && (
+                    <div
+                        style={{
+                            marginBottom: "16px",
+                            padding: "12px",
+                            borderRadius: "10px",
+                            backgroundColor: premiumInfoMessage.includes("失敗") ? "#fff5f5" : "#f0fff4",
+                            border: premiumInfoMessage.includes("失敗")
+                                ? "1px solid #feb2b2"
+                                : "1px solid #9ae6b4",
+                            color: premiumInfoMessage.includes("失敗") ? "#c53030" : "#276749",
+                            fontSize: "14px",
+                            whiteSpace: "pre-wrap",
+                        }}
+                    >
+                        {premiumInfoMessage}
+                    </div>
+                )}
+            </section>
+
+            <section
+                style={{
+                    border: "1px solid #eee",
+                    borderRadius: "14px",
+                    padding: "18px",
+                    marginBottom: "24px",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: "12px",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        marginBottom: "12px",
+                    }}
+                >
+                    <div>
+                        <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "4px" }}>
+                            ✉️ 基本文面生成
+                        </h2>
+                        <p style={{ color: "#666", fontSize: "13px" }}>
+                            日程を選ぶと4種類の文面を作成します
+                        </p>
+                    </div>
+                    <div style={{ fontSize: "14px", color: "#444" }}>
+                        対象日程：{selectedSummary ? selectedSummary.label : "未選択"}
+                    </div>
+                </div>
+
+                {basicMessageSet && selectedSummary && (
+                    <div style={{ display: "grid", gap: "14px" }}>
+                        {[
+                            {
+                                title: "① よろしくお願いします の文",
+                                text: basicMessageSet.confirmMessage,
+                                kind: "confirm" as const,
+                                logKind: "basic_confirm_message",
+                            },
+                            {
+                                title: "② 日程が合わず申し訳ない の文",
+                                text: basicMessageSet.sorryMessage,
+                                kind: "sorry" as const,
+                                logKind: "basic_sorry_message",
+                                target: `送付対象：${selectedSummary.ngUsers.length ? selectedSummary.ngUsers.join("、") : "該当なし"}`,
+                            },
+                            {
+                                title: "③ 日程調整のお願い の文",
+                                text: basicMessageSet.requestMessage,
+                                kind: "request" as const,
+                                logKind: "basic_request_message",
+                            },
+                            {
+                                title: "④ なくなった旨の文",
+                                text: basicMessageSet.cancelMessage,
+                                kind: "cancel" as const,
+                                logKind: "basic_cancel_message",
+                            },
+                        ].map((item, idx) => {
+                            const style = getMessageCardStyle(item.kind);
+                            return (
+                                <div
+                                    key={idx}
+                                    style={{
+                                        border: `1px solid ${style.border}`,
+                                        borderRadius: "12px",
+                                        padding: "14px",
+                                        background: style.bg,
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                            marginBottom: "6px",
+                                        }}
+                                    >
+                                        <div style={{ fontWeight: "bold" }}>{item.title}</div>
+                                        <button
+                                            type="button"
+                                            onClick={() => copyText(item.text, item.logKind)}
+                                            style={{
+                                                border: "none",
+                                                background: "#111",
+                                                color: "#fff",
+                                                borderRadius: "8px",
+                                                padding: "8px 12px",
+                                                cursor: "pointer",
+                                                fontSize: "12px",
+                                            }}
+                                        >
+                                            コピー
+                                        </button>
+                                    </div>
+
+                                    {item.target && (
+                                        <div
+                                            style={{
+                                                fontSize: "12px",
+                                                color: "#666",
+                                                marginBottom: "10px",
+                                                background: "#f7f7f7",
+                                                borderRadius: "8px",
+                                                padding: "8px 10px",
+                                            }}
+                                        >
+                                            {item.target}
+                                        </div>
+                                    )}
+
+                                    <textarea
+                                        readOnly
+                                        value={item.text}
+                                        style={{
+                                            width: "100%",
+                                            minHeight: "130px",
+                                            borderRadius: "10px",
+                                            border: "1px solid #ddd",
+                                            padding: "12px",
+                                            fontFamily: "inherit",
+                                            fontSize: "13px",
+                                            resize: "vertical",
+                                            background: style.textareaBg,
+                                        }}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </section>
+
+            <section
+                style={{
+                    border: "1px solid #eee",
+                    borderRadius: "14px",
+                    padding: "18px",
+                    marginBottom: "24px",
+                    background: "#fafcff",
+                }}
+            >
+                <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "10px" }}>
+                    💬 β版フィードバック
+                </h2>
+
+                {feedbackError && <div style={{ color: "#c53030", marginBottom: 12 }}>{feedbackError}</div>}
+                {feedbackSuccess && <div style={{ color: "#276749", marginBottom: 12 }}>{feedbackSuccess}</div>}
+
+                <div style={{ display: "grid", gap: "12px" }}>
+                    <select
+                        value={feedbackType}
+                        onChange={(e) => setFeedbackType(e.target.value as FeedbackType)}
+                        style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ccc" }}
+                    >
+                        <option value="bug">bug</option>
+                        <option value="improvement">improvement</option>
+                        <option value="impression">impression</option>
+                        <option value="other">other</option>
+                    </select>
+
+                    <textarea
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                        placeholder="改善点・感想など"
+                        style={{
+                            width: "100%",
+                            minHeight: "120px",
+                            padding: "12px",
+                            borderRadius: "10px",
+                            border: "1px solid #ccc",
+                            fontFamily: "inherit",
+                        }}
+                    />
+
+                    <input
+                        type="text"
+                        value={contactInfo}
+                        onChange={(e) => setContactInfo(e.target.value)}
+                        placeholder="連絡先（任意）"
+                        style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ccc" }}
+                    />
+
+                    <button
+                        type="button"
+                        onClick={handleSubmitFeedback}
+                        disabled={feedbackLoading}
+                        style={{
+                            padding: "12px 18px",
+                            borderRadius: "10px",
+                            border: "none",
+                            background: feedbackLoading ? "#999" : "#111",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                        }}
+                    >
+                        {feedbackLoading ? "送信中..." : "フィードバックを送信"}
+                    </button>
+                </div>
+            </section>
+
+            <section
+                style={{
+                    border: "1px solid #eee",
+                    borderRadius: "14px",
+                    padding: "18px",
+                }}
+            >
+                <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "14px" }}>
+                    👥 参加者一覧
+                </h2>
+
+                <div style={{ display: "grid", gap: "12px" }}>
+                    {answers.map((a, idx) => (
+                        <div
+                            key={idx}
+                            style={{
+                                border: "1px solid #eee",
+                                borderRadius: "10px",
+                                padding: "12px",
+                                background: "#fff",
+                            }}
+                        >
+                            <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{a.user_name}</div>
+                            <div style={{ fontSize: "13px", color: "#444", marginBottom: "4px" }}>
+                                メモ：{a.guest_suggestion || "なし"}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        </main>
+    );
+}
+</file>
+
+<file path="src/app/event/[id]/page.tsx">
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "next/navigation";
+
+type EventRow = {
+    id: string;
+    title: string;
+    deadline?: string;
+    candidate_dates?: string[];
+    plan_description?: string;
+};
+
+type AnswerNameRow = {
+    user_name: string;
+};
+
+const CountdownTimer = ({ deadlineStr }: { deadlineStr: string }) => {
+    const [timeLeft, setTimeLeft] = useState<string>("計算中...");
+
+    useEffect(() => {
+        if (!deadlineStr) return;
+
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const targetDate = new Date(deadlineStr);
+            targetDate.setHours(23, 59, 50, 0);
+            const target = targetDate.getTime();
+            const distance = target - now;
+
+            if (distance < 0) {
+                setTimeLeft("受付終了");
+                clearInterval(timer);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            setTimeLeft(`${days}日 ${hours}時間 ${minutes}分 ${seconds}秒`);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [deadlineStr]);
+
+    return (
+        <div
+            style={{
+                backgroundColor: "#fff5f5",
+                padding: "12px",
+                borderRadius: "12px",
+                textAlign: "center",
+                border: "1px solid #feb2b2",
+                margin: "15px 0",
+                color: "#c53030",
+                fontWeight: "bold",
+                fontSize: "14px",
+            }}
+        >
+            ⏳ 回答締切まで：{timeLeft}
+        </div>
+    );
+};
+
+function formatDateLabel(dateStr: string) {
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return dateStr;
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+function normalizeName(name?: string) {
+    return (name || "")
+        .trim()
+        .replace(/[ 　]/g, "")
+        .toLowerCase();
+}
+
+function validateUserName(name: string) {
+    const trimmed = name.trim();
+
+    if (!trimmed) return "名前を入力してください。";
+    if (/[ 　]/.test(trimmed)) return "名前にはスペースを入れずに入力してください。";
+    if (!/^[ぁ-んァ-ヶー一-龠々a-zA-Z]+$/.test(trimmed)) {
+        return "名前は、ひらがな・カタカナ・漢字・英字のみで入力してください。記号は使用できません。";
+    }
+    if (trimmed.length < 2) return "名前は2文字以上で入力してください。";
+
+    return "";
+}
+
+function parsePassRoute(passRoute?: string) {
+    if (!passRoute) return { from: "", to: "" };
+    const parts = passRoute.split("〜");
+    return {
+        from: (parts[0] || "").trim(),
+        to: (parts[1] || "").trim(),
+    };
+}
+
+export default function GuestPage() {
+    const params = useParams();
+
+    const [event, setEvent] = useState<EventRow | null>(null);
+    const [answers, setAnswers] = useState<AnswerNameRow[]>([]);
+
+    const [userName, setUserName] = useState("");
+    const [userPassCode, setUserPassCode] = useState("");
+    const [selections, setSelections] = useState<Record<string, string>>({});
+    const [withUsers, setWithUsers] = useState<string[]>([]);
+    const [withoutUsers, setWithoutUsers] = useState<string[]>([]);
+    const [withUsersText, setWithUsersText] = useState("");
+    const [withoutUsersText, setWithoutUsersText] = useState("");
+    const [suggestion, setSuggestion] = useState("");
+    const [homeStation, setHomeStation] = useState("");
+    const [passFrom, setPassFrom] = useState("");
+    const [passTo, setPassTo] = useState("");
+
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
+    const [pass, setPass] = useState("");
+
+    const [pageError, setPageError] = useState("");
+    const [restoredInfoMessage, setRestoredInfoMessage] = useState("");
+    const [restoredKey, setRestoredKey] = useState("");
+
+    const passFromTouched = useRef(false);
+    const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
+
+    const fetchAnswerNames = async () => {
+        if (!eventId) return;
+        const res = await fetch(`/api/events/${eventId}/answer-names`, { cache: "no-store" });
+        const data = await res.json();
+        setAnswers(Array.isArray(data) ? data : []);
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!eventId) return;
+
+            const res = await fetch(`/api/events/${eventId}/public`, { cache: "no-store" });
+            const data = await res.json();
+
+            if (!res.ok) {
+                setPageError("イベント情報の読み込みに失敗しました。");
+                return;
+            }
+
+            setEvent(data);
+
+            const init: Record<string, string> = {};
+            (data.candidate_dates || []).forEach((d: string) => {
+                init[d] = "ng";
+            });
+            setSelections(init);
+
+            await fetchAnswerNames();
+        };
+
+        fetchData();
+    }, [eventId]);
+
+    useEffect(() => {
+        if (!passFromTouched.current) {
+            setPassFrom(homeStation);
+        }
+    }, [homeStation]);
+
+    useEffect(() => {
+        if (!eventId) return;
+
+        const normalizedName = normalizeName(userName);
+        const trimmedPass = userPassCode.trim();
+
+        setRestoredInfoMessage("");
+
+        if (!normalizedName || !trimmedPass) return;
+
+        const currentKey = `${eventId}::${normalizedName}::${trimmedPass}`;
+        if (restoredKey === currentKey) return;
+
+        if (restoreTimerRef.current) {
+            clearTimeout(restoreTimerRef.current);
+        }
+
+        restoreTimerRef.current = setTimeout(async () => {
+            const res = await fetch(`/api/events/${eventId}/answer-restore`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_name: normalizedName,
+                    pass_code: trimmedPass,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!data?.restored) return;
+
+            setRestoredKey(currentKey);
+            setHomeStation((prev) => prev || (data.home_station || ""));
+            setSuggestion((prev) => prev || (data.guest_suggestion || ""));
+
+            const route = parsePassRoute(data.pass_route);
+            setPassFrom((prev) => prev || route.from || (data.home_station || ""));
+            setPassTo((prev) => prev || route.to);
+
+            setRestoredInfoMessage("前回入力した最寄り駅・定期区間・メモを反映しました。");
+        }, 350);
+
+        return () => {
+            if (restoreTimerRef.current) clearTimeout(restoreTimerRef.current);
+        };
+    }, [userName, userPassCode, eventId, restoredKey]);
+
+    const answerNames = useMemo(() => {
+        const currentNormalizedName = normalizeName(userName);
+        return answers
+            .map((a) => a.user_name)
+            .filter(Boolean)
+            .filter((name) => normalizeName(name) !== currentNormalizedName);
+    }, [answers, userName]);
+
+    if (!event) {
+        return <div style={{ padding: "40px", textAlign: "center" }}>読み込み中...</div>;
+    }
+
+    const isExpired = event.deadline
+        ? new Date().getTime() > new Date(event.deadline).setHours(23, 59, 50, 0)
+        : false;
+
+    const submit = async () => {
+        setPageError("");
+        setRestoredInfoMessage("");
+
+        if (isExpired) {
+            setPageError("申し訳ありません。回答期限が過ぎているため送信できません。");
+            return;
+        }
+
+        const nameValidationError = validateUserName(userName);
+        if (nameValidationError) {
+            setPageError(nameValidationError);
+            return;
+        }
+
+        if (!userPassCode.trim()) {
+            setPageError("修正用のパスコードを入力してください。");
+            return;
+        }
+
+        if (userPassCode.trim().length < 4) {
+            setPageError("修正用のパスコードは4文字以上で入力してください。");
+            return;
+        }
+
+        if (!eventId) {
+            setPageError("イベントIDが取得できませんでした。");
+            return;
+        }
+
+        const res = await fetch(`/api/events/${eventId}/answer-upsert`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                user_name: userName,
+                pass_code: userPassCode.trim(),
+                selections,
+                withUsers,
+                withoutUsers,
+                withUsersText,
+                withoutUsersText,
+                suggestion,
+                homeStation,
+                passFrom,
+                passTo,
+            }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            setPageError(data?.error || "送信に失敗しました。");
+            return;
+        }
+
+        await fetchAnswerNames();
+        setIsSubmitted(true);
+        setPageError("");
+    };
+
+    const toggleUser = (
+        name: string,
+        list: string[],
+        setList: React.Dispatch<React.SetStateAction<string[]>>,
+        otherList: string[],
+        setOtherList: React.Dispatch<React.SetStateAction<string[]>>
+    ) => {
+        const normalized = normalizeName(name);
+
+        if (list.some((n) => normalizeName(n) === normalized)) {
+            setList(list.filter((n) => normalizeName(n) !== normalized));
+            return;
+        }
+
+        setList([...list, name]);
+
+        if (otherList.some((n) => normalizeName(n) === normalized)) {
+            setOtherList(otherList.filter((n) => normalizeName(n) !== normalized));
+        }
+    };
+
+    return (
+        <main
+            style={{
+                padding: "20px",
+                maxWidth: "500px",
+                margin: "0 auto",
+                fontFamily: "sans-serif",
+                backgroundColor: "white",
+                color: "black",
+                minHeight: "100vh",
+            }}
+        >
+            <h1 style={{ fontSize: "22px", fontWeight: "bold", marginBottom: "10px" }}>
+                {event.title}
+            </h1>
+
+            {event.plan_description && (
+                <p
+                    style={{
+                        whiteSpace: "pre-wrap",
+                        fontSize: "14px",
+                        color: "#444",
+                        backgroundColor: "#f9f9f9",
+                        padding: "15px",
+                        borderRadius: "10px",
+                        marginBottom: "15px",
+                    }}
+                >
+                    {event.plan_description}
+                </p>
+            )}
+
+            <CountdownTimer deadlineStr={event.deadline || ""} />
+
+            {isExpired && (
+                <div
+                    style={{
+                        marginBottom: "18px",
+                        padding: "14px",
+                        borderRadius: "12px",
+                        backgroundColor: "#f8f8f8",
+                        border: "1px solid #ddd",
+                        color: "#333",
+                        lineHeight: 1.7,
+                        fontSize: "14px",
+                    }}
+                >
+                    <div style={{ fontWeight: "bold", marginBottom: "6px" }}>受付は終了しました</div>
+                    <div>・回答締切済みです</div>
+                    <div>・回答の修正はできません</div>
+                    <div>・ホストの集計をお待ちください</div>
+                </div>
+            )}
+
+            {pageError && (
+                <div
+                    style={{
+                        marginBottom: "16px",
+                        padding: "12px",
+                        borderRadius: "10px",
+                        backgroundColor: "#fff5f5",
+                        border: "1px solid #feb2b2",
+                        color: "#c53030",
+                        fontSize: "14px",
+                        whiteSpace: "pre-wrap",
+                    }}
+                >
+                    {pageError}
+                </div>
+            )}
+
+            {restoredInfoMessage && (
+                <div
+                    style={{
+                        marginBottom: "16px",
+                        padding: "12px",
+                        borderRadius: "10px",
+                        backgroundColor: "#f0fff4",
+                        border: "1px solid #9ae6b4",
+                        color: "#276749",
+                        fontSize: "14px",
+                    }}
+                >
+                    {restoredInfoMessage}
+                </div>
+            )}
+
+            {!isSubmitted ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginTop: "20px" }}>
+                    <section style={{ display: "flex", gap: "10px" }}>
+                        <div style={{ flex: 2 }}>
+                            <label style={{ fontWeight: "bold", fontSize: "14px" }}>名前</label>
+                            <input
+                                type="text"
+                                disabled={isExpired}
+                                placeholder="例: 山田太郎"
+                                value={userName}
+                                onChange={(e) => setUserName(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "12px",
+                                    borderRadius: "10px",
+                                    border: "1px solid #ccc",
+                                    marginTop: "5px",
+                                }}
+                            />
+                            <div style={{ fontSize: "12px", color: "#666", marginTop: "6px", lineHeight: 1.6 }}>
+                                ・フルネーム推奨です
+                                <br />
+                                ・ひらがな / カタカナ / 漢字 / 英字で入力してください
+                                <br />
+                                ・スペースや記号は使えません
+                                <br />
+                                ・英字は内部で小文字として扱います
+                            </div>
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                            <label style={{ fontWeight: "bold", fontSize: "14px" }}>認証パス</label>
+                            <input
+                                type="password"
+                                disabled={isExpired}
+                                placeholder="4文字以上"
+                                value={userPassCode}
+                                onChange={(e) => setUserPassCode(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    padding: "12px",
+                                    borderRadius: "10px",
+                                    border: "1px solid #ccc",
+                                    marginTop: "5px",
+                                }}
+                            />
+                            <div style={{ fontSize: "12px", color: "#666", marginTop: "6px", lineHeight: 1.6 }}>
+                                回答を修正するときに必要です
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <label style={{ fontWeight: "bold", fontSize: "14px" }}>日程の回答</label>
+                        <div
+                            style={{
+                                marginTop: "10px",
+                                border: "1px solid #eee",
+                                borderRadius: "10px",
+                                overflow: "hidden",
+                            }}
+                        >
+                            {(event.candidate_dates || []).map((d: string) => (
+                                <div
+                                    key={d}
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        padding: "12px",
+                                        borderBottom: "1px solid #eee",
+                                    }}
+                                >
+                                    <span style={{ fontSize: "14px" }}>{formatDateLabel(d)}</span>
+                                    <div style={{ display: "flex", gap: "8px" }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => !isExpired && setSelections({ ...selections, [d]: "ok" })}
+                                            style={{
+                                                width: "60px",
+                                                padding: "8px",
+                                                borderRadius: "8px",
+                                                border: "1px solid #eee",
+                                                backgroundColor: selections[d] === "ok" ? "#000" : "white",
+                                                color: selections[d] === "ok" ? "white" : "black",
+                                                cursor: isExpired ? "default" : "pointer",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            ○
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => !isExpired && setSelections({ ...selections, [d]: "ng" })}
+                                            style={{
+                                                width: "60px",
+                                                padding: "8px",
+                                                borderRadius: "8px",
+                                                border: "1px solid #eee",
+                                                backgroundColor: selections[d] === "ng" ? "#eee" : "white",
+                                                color: "black",
+                                                cursor: isExpired ? "default" : "pointer",
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ fontSize: "12px", color: "#666", marginTop: "8px" }}>
+                            ※ 日程の回答内容は自動復元されません
+                        </div>
+                    </section>
+
+                    <section
+                        style={{
+                            border: "2px solid #e6fffa",
+                            padding: "15px",
+                            borderRadius: "12px",
+                            backgroundColor: "#f0fff4",
+                        }}
+                    >
+                        <p
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "13px",
+                                marginBottom: "10px",
+                                color: "#2c7a7b",
+                            }}
+                        >
+                            🚃 交通の忖度（集まりやすい場所の計算に使用,機能停止中）
+                        </p>
+
+                        <input
+                            type="text"
+                            disabled={isExpired}
+                            placeholder="最寄り駅"
+                            value={homeStation}
+                            onChange={(e) => setHomeStation(e.target.value)}
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                borderRadius: "8px",
+                                border: "1px solid #b2f5ea",
+                                fontSize: "13px",
+                                marginBottom: "10px",
+                            }}
+                        />
+
+
+                    </section>
+
+                    <section
+                        style={{
+                            border: "2px solid #f0f0f0",
+                            padding: "15px",
+                            borderRadius: "12px",
+                            opacity: isExpired ? 0.6 : 1,
+                        }}
+                    >
+                        <p style={{ fontWeight: "bold", fontSize: "13px", marginBottom: "10px" }}>
+                            🕵️ 裏条件（匿名 / ホストも確認不可能）
+                        </p>
+
+                        <div style={{ marginBottom: "14px" }}>
+                            <div style={{ fontSize: "12px", marginBottom: "8px", color: "#555" }}>
+                                この人たちが来るなら行く（選択）
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                                {answerNames.map((name) => (
+                                    <button
+                                        key={`with-${name}`}
+                                        type="button"
+                                        disabled={isExpired}
+                                        onClick={() => toggleUser(name, withUsers, setWithUsers, withoutUsers, setWithoutUsers)}
+                                        style={{
+                                            border: "1px solid #ddd",
+                                            borderRadius: "999px",
+                                            padding: "8px 12px",
+                                            background: withUsers.some((n) => normalizeName(n) === normalizeName(name))
+                                                ? "#111"
+                                                : "#fff",
+                                            color: withUsers.some((n) => normalizeName(n) === normalizeName(name))
+                                                ? "#fff"
+                                                : "#111",
+                                            cursor: isExpired ? "default" : "pointer",
+                                            fontSize: "12px",
+                                        }}
+                                    >
+                                        {name}
+                                    </button>
+                                ))}
+                            </div>
+                            <input
+                                type="text"
+                                disabled={isExpired}
+                                placeholder="自由入力（カンマ区切り）"
+                                value={withUsersText}
+                                onChange={(e) => setWithUsersText(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    marginTop: "10px",
+                                    padding: "10px",
+                                    borderRadius: "8px",
+                                    border: "1px solid #eee",
+                                    fontSize: "13px",
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <div style={{ fontSize: "12px", marginBottom: "8px", color: "#555" }}>
+                                この人たちが来るなら行かない（選択）
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                                {answerNames.map((name) => (
+                                    <button
+                                        key={`without-${name}`}
+                                        type="button"
+                                        disabled={isExpired}
+                                        onClick={() =>
+                                            toggleUser(name, withoutUsers, setWithoutUsers, withUsers, setWithUsers)
+                                        }
+                                        style={{
+                                            border: "1px solid #ddd",
+                                            borderRadius: "999px",
+                                            padding: "8px 12px",
+                                            background: withoutUsers.some(
+                                                (n) => normalizeName(n) === normalizeName(name)
+                                            )
+                                                ? "#111"
+                                                : "#fff",
+                                            color: withoutUsers.some((n) => normalizeName(n) === normalizeName(name))
+                                                ? "#fff"
+                                                : "#111",
+                                            cursor: isExpired ? "default" : "pointer",
+                                            fontSize: "12px",
+                                        }}
+                                    >
+                                        {name}
+                                    </button>
+                                ))}
+                            </div>
+                            <input
+                                type="text"
+                                disabled={isExpired}
+                                placeholder="自由入力（カンマ区切り）"
+                                value={withoutUsersText}
+                                onChange={(e) => setWithoutUsersText(e.target.value)}
+                                style={{
+                                    width: "100%",
+                                    marginTop: "10px",
+                                    padding: "10px",
+                                    borderRadius: "8px",
+                                    border: "1px solid #eee",
+                                    fontSize: "13px",
+                                }}
+                            />
+                        </div>
+
+                        <div style={{ fontSize: "12px", color: "#666", marginTop: "8px", lineHeight: 1.6 }}>
+                            ※ 裏条件の内容は自動復元されません
+                        </div>
+                    </section>
+
+                    <section>
+                        <label style={{ fontWeight: "bold", fontSize: "14px" }}>やりたいこと案・メモ</label>
+                        <textarea
+                            disabled={isExpired}
+                            placeholder="例：焼肉がいいです！"
+                            value={suggestion}
+                            onChange={(e) => setSuggestion(e.target.value)}
+                            style={{
+                                width: "100%",
+                                padding: "12px",
+                                borderRadius: "10px",
+                                border: "1px solid #ccc",
+                                minHeight: "80px",
+                                marginTop: "5px",
+                                fontFamily: "inherit",
+                            }}
+                        />
+                    </section>
+
+                    <button
+                        type="button"
+                        onClick={submit}
+                        disabled={isExpired}
+                        style={{
+                            padding: "20px",
+                            backgroundColor: isExpired ? "#ccc" : "#000",
+                            color: "white",
+                            borderRadius: "12px",
+                            fontWeight: "bold",
+                            border: "none",
+                            cursor: isExpired ? "not-allowed" : "pointer",
+                            fontSize: "16px",
+                        }}
+                    >
+                        {isExpired ? "回答締切となりました" : "回答を送信する"}
+                    </button>
+                </div>
+            ) : (
+                <div style={{ textAlign: "center", padding: "60px" }}>
+                    <h2 style={{ color: "#28a745" }}>✅ 送信完了！</h2>
+                    <p style={{ marginTop: "10px", color: "#666", lineHeight: 1.8 }}>
+                        ホストの集計をお待ちください。
+                        <br />
+                        必要があれば、同じ名前と認証パスで再入力できます。
+                    </p>
+                    {!isExpired && (
+                        <button
+                            type="button"
+                            onClick={() => setIsSubmitted(false)}
+                            style={{
+                                marginTop: "20px",
+                                background: "none",
+                                border: "none",
+                                color: "#0070f3",
+                                cursor: "pointer",
+                            }}
+                        >
+                            回答を修正する
+                        </button>
+                    )}
+                </div>
+            )}
+
+            <footer style={{ marginTop: "50px", textAlign: "center", paddingBottom: "40px" }}>
+                <button
+                    type="button"
+                    onClick={() => setShowLogin(!showLogin)}
+                    style={{
+                        color: "#494747",
+                        fontSize: "14px",
+                        border: "none",
+                        background: "none",
+                        cursor: "pointer",
+                    }}
+                >
+                    host Login
+                </button>
+
+                {showLogin && (
+                    <div
+                        style={{
+                            marginTop: "15px",
+                            padding: "15px",
+                            border: "1px solid #eee",
+                            borderRadius: "10px",
+                        }}
+                    >
+                        <input
+                            type="password"
+                            value={pass}
+                            onChange={(e) => setPass(e.target.value)}
+                            placeholder="Pass"
+                            style={{ padding: "8px", border: "1px solid #eee", borderRadius: "5px" }}
+                        />
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                if (!eventId) return;
+
+                                const res = await fetch(`/api/events/${eventId}/host-login`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ password: pass }),
+                                });
+
+                                const data = await res.json();
+
+                                if (!res.ok) {
+                                    setPageError(data?.error || "ホスト用パスワードが違います。");
+                                    return;
+                                }
+
+                                window.location.href = `/event/${eventId}/host`;
+                            }}
+                            style={{
+                                marginLeft: "10px",
+                                padding: "8px 15px",
+                                backgroundColor: "#333",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Go
+                        </button>
+                    </div>
+                )}
+            </footer>
+        </main>
+    );
+}
+</file>
+
+<file path="src/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+</file>
+
+<file path="src/app/lib/host-session.ts">
+import crypto from "crypto";
+
+const HOST_SESSION_SECRET = process.env.HOST_SESSION_SECRET || "";
+
+if (!HOST_SESSION_SECRET) {
+    throw new Error("HOST_SESSION_SECRET is missing.");
+}
+
+export function getHostCookieName(eventId: string) {
+    return `host_auth_${eventId}`;
+}
+
+export function signHostSession(eventId: string, password: string) {
+    return crypto
+        .createHmac("sha256", HOST_SESSION_SECRET)
+        .update(`${eventId}:${password}`)
+        .digest("hex");
+}
+
+export function safeEquals(a: string, b: string) {
+    const aBuf = Buffer.from(a);
+    const bBuf = Buffer.from(b);
+    if (aBuf.length !== bBuf.length) return false;
+    return crypto.timingSafeEqual(aBuf, bBuf);
+}
+</file>
+
+<file path="src/app/lib/supabase.ts">
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+</file>
+
+<file path="src/app/lib/supabase/server.ts">
+import { createClient } from "@supabase/supabase-js";
+
+export function createServerSupabase() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!url || !serviceRoleKey) {
+        throw new Error("Supabase server env is missing.");
+    }
+
+    return createClient(url, serviceRoleKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+        },
+    });
+}
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "smart-chose",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.98.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "stripe": "^20.4.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "nittei | 非公開回答・裏条件・連絡文面作成までできる日程調整ツール",
+  description:
+    "nitteiは、回答を参加者同士に公開せずに集められる日程調整ツールです。誰となら参加できるかなどの裏条件も扱え、ホスト向けの集計や連絡文面作成まで対応しています。",
+  verification: {
+    google: "6gC9z0qXRqeLIORnro7Bi-0RS-IvaIzJb_gQhQG9QvU",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="ja">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/app/page.tsx">
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function CreateEvent() {
+  const router = useRouter();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [password, setPassword] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [finalCandidateDates, setFinalCandidateDates] = useState<string[]>([]);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [viewDate, setViewDate] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+  );
+
+  const changeMonth = (offset: number) => {
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + offset, 1));
+  };
+
+  const createAndShareEvent = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch("/api/events/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          password,
+          deadline,
+          candidate_dates: finalCandidateDates,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "イベント作成に失敗しました。");
+      }
+
+      const eventId = data.id;
+      const shareUrl = `${window.location.origin}/event/${eventId}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title,
+            text: `イベント「${title}」の日程調整をお願いします！`,
+            url: shareUrl,
+          });
+        } catch {
+          await navigator.clipboard.writeText(shareUrl);
+        }
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("URLをコピーしました！友達に送ってください。");
+      }
+
+      router.push(`/event/${eventId}`);
+    } catch (error: any) {
+      alert(error?.message || "作成に失敗しました。");
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isConfirming) {
+    return (
+      <main
+        style={{
+          padding: "20px",
+          maxWidth: "450px",
+          margin: "0 auto",
+          color: "black",
+          backgroundColor: "white",
+          minHeight: "100vh",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <h1 style={{ textAlign: "center", fontSize: "22px" }}>📅 予定調整ツールA</h1>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: "16px",
+            lineHeight: "1.8",
+            margin: "0 auto 24px",
+            maxWidth: "720px",
+          }}
+        >
+          nitteiは、参加者同士に回答を見せずに日程調整ができるツールです。
+          候補日を作成して回答を集めるだけでなく、表では出しにくい条件も記入できます。
+          ホストは回答をまとめて確認でき、日程決定後の連絡文面作成まで進められます。
+        </p>
+
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <section>
+            <label style={{ fontWeight: "bold" }}>1. イベント名</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ccc" }}
+            />
+          </section>
+
+          <section>
+            <label style={{ fontWeight: "bold" }}>2. イベント詳細（場所・予算など）</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+                border: "1px solid #ccc",
+                minHeight: "80px",
+                marginTop: "5px",
+              }}
+            />
+          </section>
+
+          <section>
+            <label style={{ fontWeight: "bold" }}>3. パスワード & 期限</label>
+            <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
+              <input
+                type="password"
+                placeholder="パスワード"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
+              />
+              <input
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
+              />
+            </div>
+          </section>
+
+          <section style={{ border: "1px solid #eee", padding: "15px", borderRadius: "15px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <label style={{ fontWeight: "bold" }}>4. 候補日を選択</label>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => changeMonth(-1)}
+                  style={{
+                    border: "none",
+                    background: "#f0f0f0",
+                    padding: "5px 12px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ＜
+                </button>
+                <span style={{ fontSize: "14px", fontWeight: "bold", minWidth: "100px", textAlign: "center" }}>
+                  {viewDate.getFullYear()}年 {viewDate.getMonth() + 1}月
+                </span>
+                <button
+                  type="button"
+                  onClick={() => changeMonth(1)}
+                  style={{
+                    border: "none",
+                    background: "#f0f0f0",
+                    padding: "5px 12px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ＞
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "5px", textAlign: "center" }}>
+              {["日", "月", "火", "水", "木", "金", "土"].map((w, i) => (
+                <div
+                  key={w}
+                  style={{
+                    fontSize: "12px",
+                    color: i === 0 ? "#e53e3e" : i === 6 ? "#3182ce" : "#999",
+                    paddingBottom: "5px",
+                  }}
+                >
+                  {w}
+                </div>
+              ))}
+              {(() => {
+                const year = viewDate.getFullYear();
+                const month = viewDate.getMonth();
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
+                const days = [];
+                for (let i = 0; i < firstDayOfMonth; i++) days.push(<div key={`empty-${i}`} />);
+                for (let d = 1; d <= lastDateOfMonth; d++) {
+                  const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+                  const isSelected = finalCandidateDates.includes(dateStr);
+                  days.push(
+                    <div
+                      key={dateStr}
+                      onClick={() => {
+                        if (isSelected) setFinalCandidateDates(finalCandidateDates.filter((item) => item !== dateStr));
+                        else setFinalCandidateDates([...finalCandidateDates, dateStr]);
+                      }}
+                      style={{
+                        padding: "10px 0",
+                        borderRadius: "8px",
+                        backgroundColor: isSelected ? "#333" : "white",
+                        color: isSelected ? "white" : "black",
+                        border: "1px solid #eee",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: isSelected ? "bold" : "normal",
+                        transition: "0.1s",
+                      }}
+                    >
+                      {d}
+                    </div>
+                  );
+                }
+                return days;
+              })()}
+            </div>
+          </section>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (!title || !password || !deadline || finalCandidateDates.length === 0) {
+                return alert("入力が足りません");
+              }
+              setIsConfirming(true);
+            }}
+            style={{
+              padding: "18px",
+              backgroundColor: "#000",
+              color: "white",
+              borderRadius: "12px",
+              fontWeight: "bold",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            確認画面へ
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main
+      style={{
+        padding: "20px",
+        maxWidth: "450px",
+        margin: "0 auto",
+        backgroundColor: "white",
+        color: "black",
+        minHeight: "100vh",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h2 style={{ textAlign: "center" }}>📝 最終確認</h2>
+      <div style={{ border: "1px solid #eee", padding: "20px", borderRadius: "15px", marginTop: "20px" }}>
+        <p><strong>イベント名:</strong> {title}</p>
+        <p style={{ fontSize: "14px", color: "#666" }}><strong>詳細:</strong> {description || "なし"}</p>
+        <p><strong>回答期限:</strong> {deadline}</p>
+        <p><strong>候補日:</strong> {finalCandidateDates.length}件</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
+          {finalCandidateDates.sort().map((d) => {
+            const dateObj = new Date(d);
+            return (
+              <span
+                key={d}
+                style={{
+                  fontSize: "12px",
+                  backgroundColor: "#f0f0f0",
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  border: "1px solid #e0e0e0",
+                }}
+              >
+                {dateObj.getMonth() + 1}/{dateObj.getDate()}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
+        <button
+          type="button"
+          onClick={createAndShareEvent}
+          disabled={isSubmitting}
+          style={{
+            padding: "18px",
+            backgroundColor: "#28a745",
+            color: "white",
+            borderRadius: "12px",
+            border: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
+        >
+          {isSubmitting ? "作成中..." : "発行して共有する"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsConfirming(false)}
+          style={{
+            padding: "12px",
+            border: "none",
+            background: "none",
+            color: "#666",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          修正する
+        </button>
+      </div>
+    </main>
+  );
+}
+</file>
+
+</files>
