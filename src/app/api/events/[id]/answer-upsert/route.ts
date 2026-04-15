@@ -44,6 +44,7 @@ export async function POST(
         const homeStation = normalizeName(String(body?.homeStation || ""));
         const passFrom = normalizeName(String(body?.passFrom || ""));
         const passTo = normalizeName(String(body?.passTo || ""));
+        const emailGuest = String(body?.email_guest || "").trim();
 
         const nameValidationError = validateUserName(rawUserName);
         if (nameValidationError) {
@@ -128,6 +129,7 @@ export async function POST(
                     guest_suggestion: suggestion,
                     home_station: homeStation,
                     pass_route: passRoute,
+                    email_guest: emailGuest,
                 },
             ],
             { onConflict: "event_id,user_name" }

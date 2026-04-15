@@ -538,12 +538,49 @@ export default function HostPage() {
                 </div>
             </section>
 
-            <div className="mt-8 shadow-sm p-4 border rounded-xl">
-                <h2 className="text-lg font-bold mb-2">カレンダー連携</h2>
+            <div className="mt-8 shadow-sm p-4 border rounded-xl bg-white">
+                <h2 className="text-lg font-bold mb-4 border-b pb-2">カレンダー連携の確認</h2>
+
+                <div className="mb-6 bg-gray-50 p-4 rounded-md text-sm border">
+                    <div className="mb-3">
+                        <span className="font-semibold text-gray-700">📌 予定のタイトル:</span>
+                        <p className="ml-4 mt-1 text-gray-900 font-medium">{event?.title || "未取得"}</p>
+                    </div>
+                    <div className="mb-3">
+                        <span className="font-semibold text-gray-700">📅 確定する日程:</span>
+                        {selectedDateForMessage ? (
+                            <p className="ml-4 mt-1 text-blue-600 font-bold">{selectedDateForMessage}</p>
+                        ) : (
+                            <p className="ml-4 mt-1 text-red-500">※上部で日程を選択してください</p>
+                        )}
+                    </div>
+
+                    {/* 👇 ここを「メールアドレス」から「参加者名」の表示に変更！ */}
+                    <div>
+                        <span className="font-semibold text-gray-700">👤 カレンダーに招待される参加者:</span>
+                        {selectedDateForMessage ? (
+                            <ul className="ml-4 mt-1 text-gray-900 font-medium list-disc list-inside">
+                                {selectedSummary?.okUsers || [].length > 0 ? (
+                                    selectedSummary?.okUsers.map(name => (
+                                        <li key={name}>{name}</li>
+                                    ))
+                                ) : (
+                                    <li className="text-gray-500 list-none">参加予定のゲストはいません</li>
+                                )}
+                            </ul>
+                        ) : (
+                            <p className="ml-4 mt-1 text-gray-500">※日程を選択すると表示されます</p>
+                        )}
+                    </div>
+                </div>
+
                 <p className="text-sm text-gray-600 mb-4">
-                    日程を確定すると同時に、自分と参加者のGoogleカレンダーに予定を自動登録します。
+                    上記の内容で、自分と参加者のGoogleカレンダーに予定を自動登録し、招待メールを送信します。
                 </p>
-                <CalendarSetButton />
+
+                <div className={!selectedDateForMessage ? "opacity-50 pointer-events-none grayscale" : ""}>
+                    <CalendarSetButton />
+                </div>
             </div>
 
             <section

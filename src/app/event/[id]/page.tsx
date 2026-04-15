@@ -107,6 +107,7 @@ export default function GuestPage() {
 
     const [userName, setUserName] = useState("");
     const [userPassCode, setUserPassCode] = useState("");
+    const [emailGuest, setEmailGuest] = useState("");
     const [selections, setSelections] = useState<Record<string, string>>({});
     const [withUsers, setWithUsers] = useState<string[]>([]);
     const [withoutUsers, setWithoutUsers] = useState<string[]>([]);
@@ -268,6 +269,7 @@ export default function GuestPage() {
             body: JSON.stringify({
                 user_name: userName,
                 pass_code: userPassCode.trim(),
+                email_guest: emailGuest,
                 selections,
                 withUsers,
                 withoutUsers,
@@ -664,6 +666,27 @@ export default function GuestPage() {
 
                         <div style={{ fontSize: "12px", color: "#666", marginTop: "8px", lineHeight: 1.6 }}>
                             ※ 裏条件の内容は自動復元されません
+                        </div>
+                    </section>
+
+                    <section>
+                        <label style={{ fontWeight: "bold", fontSize: "14px" }}>メールアドレス（カレンダー連携用）</label>
+                        <input
+                            type="email"
+                            disabled={isExpired}
+                            placeholder="例: guest@example.com"
+                            value={emailGuest}
+                            onChange={(e) => setEmailGuest(e.target.value)}
+                            style={{
+                                width: "100%",
+                                padding: "12px",
+                                borderRadius: "10px",
+                                border: "1px solid #ccc",
+                                marginTop: "5px",
+                            }}
+                        />
+                        <div style={{ fontSize: "12px", color: "#666", marginTop: "6px", lineHeight: 1.6 }}>
+                            日程が確定した際、Googleカレンダーからの自動招待に使用されます（他の参加者には非公開です）。
                         </div>
                     </section>
 
