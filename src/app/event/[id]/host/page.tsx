@@ -9,6 +9,7 @@ type AnswerRow = {
     selections?: Record<string, string>;
     target_user_name?: string;
     guest_suggestion?: string;
+    email_guest?: string;
 };
 
 type DateSummaryItem = {
@@ -478,6 +479,11 @@ export default function HostPage() {
         );
     }
 
+    const targetGuestEmails = answers
+        .filter(ans => (selectedSummary?.okUsers || []).includes(ans.user_name))
+        .map(ans => ans.email_guest)
+        .filter(email => !!email) as string[];
+
     return (
         <main
             style={{
@@ -489,6 +495,8 @@ export default function HostPage() {
                 color: "black",
                 minHeight: "100vh",
             }}
+
+
         >
             <h1 style={{ fontSize: "28px", fontWeight: "bold", marginBottom: "8px" }}>
                 {event.title}
@@ -579,8 +587,9 @@ export default function HostPage() {
                 </p>
 
                 <div className={!selectedDateForMessage ? "opacity-50 pointer-events-none grayscale" : ""}>
-                    <CalendarSetButton />
+                    <CalendarSetButton eventTitle={event?.title || "未取得"} selectedDate={selectedDateForMessage} guestEmails={targetGuestEmails} />
                 </div>
+
             </div>
 
             <section

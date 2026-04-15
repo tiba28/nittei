@@ -1,34 +1,71 @@
 'use client'
 
-// auth-helpersの代わりに、基本のsupabase-jsを使う
 import { createClient } from '@supabase/supabase-js'
+import { useState } from 'react'
 
-export default function CalendarSetButton() {
+interface Props {
+    eventTitle: string;
+    selectedDate: string;
+    guestEmails: string[]; // APIから取得したメールアドレスの配列を渡す
+}
+
+export default function CalendarSetButton({ eventTitle, selectedDate, guestEmails }: Props) {
+    const [loading, setLoading] = useState(false)
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    const handleConnect = async () => {
-        await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                scopes: 'https://www.googleapis.com/auth/calendar.events',
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent',
+    const handleAction = async () => {
+        setLoading(true)
+
+        // 1. セッションチェック
+        const { data: { session } } = await supabase.auth.getSession()
+
+        const token = session?.provider_token;
+
+        // ログインしていない、またはGoogleの鍵がない場合はログイン画面へ
+        if (!session || !session.provider_token) {
+            await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    scopes: 'https://www.googleapis.com/auth/calendar.events',
+                    queryParams: { access_type: 'offline', prompt: 'consent' },
+                    redirectTo: window.location.href, // ログイン後、今のページに戻る
                 },
-                // ログイン後の戻り先                redirectTo: `${window.location.origin}/auth/callback`,
-            },
-        })
+            })
+            return
+        }
+
+        // 2. 登録APIの呼び出し
+        try {
+            const res = await fetch('/api/calendar/create-event', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ eventTitle, selectedDate, guestEmails, googleToken: token }),
+            })
+
+            if (res.ok) {
+                alert('Googleカレンダーへの登録と招待メールの送信が完了しました！')
+            } else {
+                const err = await res.json()
+                alert('エラーが発生しました: ' + err.error)
+            }
+        } catch (e) {
+            alert('通信エラーが発生しました')
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
         <button
-            onClick={handleConnect}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            onClick={handleAction}
+            disabled={loading || !selectedDate}
+            className={`w-full py-3 rounded-xl font-bold text-white transition-all ${loading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'
+                }`}
         >
-            Googleカレンダーと連携して日程を確定する
+            {loading ? '処理中...' : 'Googleカレンダーに登録して確定する'}
         </button>
     )
 }
