@@ -122,6 +122,11 @@ export default function GuestPage() {
     const [showLogin, setShowLogin] = useState(false);
     const [pass, setPass] = useState("");
 
+    const [feedbackType, setFeedbackType] = useState<"bug" | "improvement" | "impression" | "other">("impression");
+    const [feedbackText, setFeedbackText] = useState("");
+    const [contactInfo, setContactInfo] = useState("");
+    const [feedbackLoading, setFeedbackLoading] = useState(false);
+    const [feedbackSuccess, setFeedbackSuccess] = useState(false);
 
     const [pageError, setPageError] = useState("");
     const [restoredInfoMessage, setRestoredInfoMessage] = useState("");
@@ -139,6 +144,35 @@ export default function GuestPage() {
         const res = await fetch(`/api/events/${eventId}/answer-names`, { cache: "no-store" });
         const data = await res.json();
         setAnswers(Array.isArray(data) ? data : []);
+    };
+
+    const handleSubmitFeedback = async () => {
+        if (!feedbackText.trim()) {
+            alert("フィードバック内容を入力してください。");
+            return;
+        }
+        setFeedbackLoading(true);
+        try {
+            const res = await fetch(`/api/events/${eventId}/feedback`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    feedback_type: feedbackType,
+                    feedback_text: feedbackText.trim(),
+                    contact_info: contactInfo.trim(),
+                }),
+            });
+
+            if (res.ok) {
+                setFeedbackSuccess(true);
+            } else {
+                alert("送信に失敗しました。");
+            }
+        } catch (error) {
+            alert("通信エラーが発生しました。");
+        } finally {
+            setFeedbackLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -293,8 +327,9 @@ export default function GuestPage() {
         }
 
         await fetchAnswerNames();
-        setIsSubmitted(true);
         setPageError("");
+        setIsSubmitted(true);
+
     };
 
     const toggleUser = (
@@ -317,6 +352,61 @@ export default function GuestPage() {
             setOtherList(otherList.filter((n) => normalizeName(n) !== normalized));
         }
     };
+
+    // ▼ 修正前： if (isSubmitted) { ...
+    // ▼ 修正後： if (isSubmitted && !feedbackSuccess) { ... に変更！
+
+    if (isSubmitted && !feedbackSuccess) {
+        return (
+            <main className="max-w-md mx-auto p-6 font-sans">
+                <div className="bg-white border rounded-xl p-6 shadow-sm text-center">
+                    <h1 className="text-2xl font-bold text-green-600 mb-4">🎉 回答が完了しました！</h1>
+                    <p className="text-gray-600 mb-8">日程調整へのご協力ありがとうございます。</p>
+
+                    <div className="text-left bg-gray-50 p-5 rounded-xl border">
+                        <h2 className="font-bold text-gray-800 mb-2">💬 アプリの感想・改善要望をお聞かせください</h2>
+                        <p className="text-xs text-gray-500 mb-4">匿名日程調整「にってい」は現在β版です。より使いやすくするため、ぜひご意見をお願いします！</p>
+
+                        <select
+                            value={feedbackType}
+                            onChange={(e) => setFeedbackType(e.target.value as any)}
+                            className="w-full p-2 mb-3 border rounded-lg"
+                        >
+                            <option value="impression">使ってみた感想</option>
+                            <option value="improvement">機能の改善要望</option>
+                            <option value="bug">バグの報告</option>
+                            <option value="other">その他</option>
+                        </select>
+
+                        <textarea
+                            value={feedbackText}
+                            onChange={(e) => setFeedbackText(e.target.value)}
+                            placeholder="ここが使いやすかった、ここが分かりにくかった等"
+                            className="w-full p-3 border rounded-lg h-24 mb-3"
+                        />
+
+                        <button
+                            onClick={handleSubmitFeedback}
+                            disabled={feedbackLoading}
+                            className={`w-full py-3 rounded-lg font-bold text-white transition-all ${feedbackLoading ? "bg-gray-400" : "bg-black hover:bg-gray-800"
+                                }`}
+                        >
+                            {feedbackLoading ? "送信中..." : "フィードバックを送信する"}
+                        </button>
+
+                        {/* ▼ ここを追加：書かない人はスキップして元の完了画面へ行けるようにする */}
+                        <button
+                            onClick={() => setFeedbackSuccess(true)}
+                            className="w-full mt-3 py-3 rounded-lg font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-all"
+                        >
+                            スキップして完了画面へ
+                        </button>
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
 
     return (
         <main
