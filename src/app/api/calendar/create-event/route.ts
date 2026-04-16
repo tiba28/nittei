@@ -1,37 +1,56 @@
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-    // 1. フロント（ボタン）から送られてきたデータを受け取る
-    // ★ ここに googleToken を追加したで！
-    const { eventTitle, selectedDate, guestEmails, googleToken } = await request.json();
+    const { eventTitle, selectedDate, guestEmails, googleToken, eventId } = await request.json(); // ★eventIdを追加
 
-    // 2. 鍵（トークン）が届いているかチェック
     if (!googleToken) {
-        return NextResponse.json({ error: "Google連携が必要です。もう一度ボタンを押してください。" }, { status: 401 });
+        return NextResponse.json({ error: "Google連携が必要です" }, { status: 401 });
     }
 
-    // 3. Google Calendar API を叩く
+    // 1. Google Calendar API を叩く
     const googleRes = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events?sendUpdates=all", {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${googleToken}`, // ★ ここで受け取った鍵を使う！
+            Authorization: `Bearer ${googleToken}`,
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            summary: eventTitle,
-            description: "スマート調整より自動登録されました。",
+            summary: `${eventTitle}`,
+            description: `「にってい（nittei）」で調整した以下の日程で確定しました。\n日程: ${selectedDate}\n\n※このメールは日程確定の自動通知です。`,
             start: { date: selectedDate },
             end: { date: selectedDate },
-            // ゲストのメアド配列をGoogleの指定フォーマットに変換
             attendees: guestEmails.map((email: string) => ({ email })),
         }),
     });
 
     const data = await googleRes.json();
-
-    // Google側でエラーが起きたらそれを返す
     if (!googleRes.ok) return NextResponse.json({ error: data.error.message }, { status: 500 });
 
-    // 成功したらOKを返す
-    return NextResponse.json({ success: true, eventUrl: data.htmlLink });
+    // 2. ★成功したら、Supabaseに「確定日」と「Google予定ID」を書き込む
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) { return cookieStore.get(name)?.value },
+            },
+        }
+    );
+
+    const { error: updateError } = await supabase
+        .from('events')
+        .update({
+            confirmed_date: selectedDate,
+            google_event_id: data.id
+        })
+        .eq('id', eventId);
+
+    if (updateError) {
+        return NextResponse.json({ error: "DBの更新に失敗しました" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
 }

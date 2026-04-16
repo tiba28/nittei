@@ -4,12 +4,14 @@ import { createClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 
 interface Props {
+    eventId: string;
     eventTitle: string;
     selectedDate: string;
     guestEmails: string[]; // APIから取得したメールアドレスの配列を渡す
+    onSuccess?: (emails: string[]) => void;
 }
 
-export default function CalendarSetButton({ eventTitle, selectedDate, guestEmails }: Props) {
+export default function CalendarSetButton({ eventTitle, selectedDate, guestEmails, eventId, onSuccess }: Props) {
     const [loading, setLoading] = useState(false)
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -42,11 +44,13 @@ export default function CalendarSetButton({ eventTitle, selectedDate, guestEmail
             const res = await fetch('/api/calendar/create-event', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ eventTitle, selectedDate, guestEmails, googleToken: token }),
+                body: JSON.stringify({ eventTitle, selectedDate, guestEmails, googleToken: token, eventId }),
             })
 
             if (res.ok) {
-                alert('Googleカレンダーへの登録と招待メールの送信が完了しました！')
+                const data = await res.json();
+                alert('Googleカレンダーへの登録が完了しました！');
+                if (onSuccess) onSuccess(guestEmails); // 成功したリストを親に渡す
             } else {
                 const err = await res.json()
                 alert('エラーが発生しました: ' + err.error)

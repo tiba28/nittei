@@ -183,7 +183,7 @@ function getMessageCardStyle(kind: "confirm" | "sorry" | "request" | "cancel") {
 
 export default function HostPage() {
     const params = useParams();
-    const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
+    const eventId = (Array.isArray(params.id) ? params.id[0] : params.id) ?? "";
 
     const [event, setEvent] = useState<any>(null);
     const [answers, setAnswers] = useState<AnswerRow[]>([]);
@@ -198,6 +198,8 @@ export default function HostPage() {
         environment: "none",
         needs: [],
     });
+
+    const [regResults, setRegResults] = useState<string[]>([]);
 
     const [premiumInfoMessage, setPremiumInfoMessage] = useState("");
     const [interestLoading, setInterestLoading] = useState(false);
@@ -478,11 +480,17 @@ export default function HostPage() {
             </main>
         );
     }
-
+    // Googleに送る用のメアドリスト作成
     const targetGuestEmails = answers
-        .filter(ans => (selectedSummary?.okUsers || []).includes(ans.user_name))
-        .map(ans => ans.email_guest)
-        .filter(email => !!email) as string[];
+        .filter(ans => {
+            const isTarget = (selectedSummary?.okUsers || [])
+                .map(n => normalizeName(n))
+                .includes(normalizeName(ans.user_name));
+
+            // 「ターゲットの参加者」かつ「@が含まれる有効そうなメアド」の人だけ抽出
+            return isTarget && ans.email_guest && ans.email_guest.includes('@');
+        })
+        .map(ans => ans.email_guest as string);
 
     return (
         <main
@@ -546,51 +554,110 @@ export default function HostPage() {
                 </div>
             </section>
 
-            <div className="mt-8 shadow-sm p-4 border rounded-xl bg-white">
-                <h2 className="text-lg font-bold mb-4 border-b pb-2">カレンダー連携の確認</h2>
+            {event.confirmed_date ? (
+                // 🎉 確定済みの表示
+                <div className="mt-8 p-6 border-2 border-green-500 rounded-2xl bg-green-50 text-center">
+                    <h2 className="text-2xl font-bold text-green-700 mb-2">🎉 イベント確定済み</h2>
+                    <p className="text-lg mb-4">
+                        このイベントは <span className="font-bold underline">{formatDateLabel(event.confirmed_date)}</span> で確定しています。
+                    </p>
+                    <p className="text-sm text-gray-600 mb-6">
+                        Googleカレンダーへの登録と、参加者への招待メール送信も完了しています。
+                    </p>
 
-                <div className="mb-6 bg-gray-50 p-4 rounded-md text-sm border">
-                    <div className="mb-3">
-                        <span className="font-semibold text-gray-700">📌 予定のタイトル:</span>
-                        <p className="ml-4 mt-1 text-gray-900 font-medium">{event?.title || "未取得"}</p>
-                    </div>
-                    <div className="mb-3">
-                        <span className="font-semibold text-gray-700">📅 確定する日程:</span>
-                        {selectedDateForMessage ? (
-                            <p className="ml-4 mt-1 text-blue-600 font-bold">{selectedDateForMessage}</p>
-                        ) : (
-                            <p className="ml-4 mt-1 text-red-500">※上部で日程を選択してください</p>
-                        )}
-                    </div>
-
-                    {/* 👇 ここを「メールアドレス」から「参加者名」の表示に変更！ */}
-                    <div>
-                        <span className="font-semibold text-gray-700">👤 カレンダーに招待される参加者:</span>
-                        {selectedDateForMessage ? (
-                            <ul className="ml-4 mt-1 text-gray-900 font-medium list-disc list-inside">
-                                {selectedSummary?.okUsers || [].length > 0 ? (
-                                    selectedSummary?.okUsers.map(name => (
-                                        <li key={name}>{name}</li>
-                                    ))
-                                ) : (
-                                    <li className="text-gray-500 list-none">参加予定のゲストはいません</li>
-                                )}
-                            </ul>
-                        ) : (
-                            <p className="ml-4 mt-1 text-gray-500">※日程を選択すると表示されます</p>
-                        )}
+                    <div className="flex gap-4 justify-center">
+                        <button className="px-6 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50">
+                            予定を変更する
+                        </button>
+                        <button className="px-6 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg shadow-sm hover:bg-red-100">
+                            確定を取り消す
+                        </button>
                     </div>
                 </div>
+            ) : (
+                // ⚙️ 未確定時（今までのUI）
 
-                <p className="text-sm text-gray-600 mb-4">
-                    上記の内容で、自分と参加者のGoogleカレンダーに予定を自動登録し、招待メールを送信します。
-                </p>
+                <div className="mt-8 shadow-sm p-4 border rounded-xl bg-white">
+                    <h2 className="text-lg font-bold mb-4 border-b pb-2">カレンダー連携の確認</h2>
 
-                <div className={!selectedDateForMessage ? "opacity-50 pointer-events-none grayscale" : ""}>
-                    <CalendarSetButton eventTitle={event?.title || "未取得"} selectedDate={selectedDateForMessage} guestEmails={targetGuestEmails} />
+                    <div className="mb-6 bg-gray-50 p-4 rounded-md text-sm border">
+                        <div className="mb-3">
+                            <span className="font-semibold text-gray-700">📌 予定のタイトル:</span>
+                            <p className="ml-4 mt-1 text-gray-900 font-medium">{event?.title || "未取得"}</p>
+                        </div>
+                        <div className="mb-3">
+                            <span className="font-semibold text-gray-700">📅 確定する日程:</span>
+                            {selectedDateForMessage ? (
+                                <p className="ml-4 mt-1 text-blue-600 font-bold">{selectedDateForMessage}</p>
+                            ) : (
+                                <p className="ml-4 mt-1 text-red-500">※上部で日程を選択してください</p>
+                            )}
+                        </div>
+
+
+                        {/* 👇 ここを「メールアドレス」から「参加者名」の表示に変更！ */}
+                        <div>
+                            <span className="font-semibold text-gray-700">👤 カレンダーに招待される参加者:</span>
+                            {selectedDateForMessage ? (
+                                <ul className="ml-4 mt-1 text-gray-900 font-medium list-disc list-inside">
+                                    {(selectedSummary?.okUsers || []).length > 0 ? (
+                                        selectedSummary?.okUsers.map((name) => {
+                                            const guestData = answers.find(
+                                                (ans) => normalizeName(ans.user_name) === normalizeName(name)
+                                            );
+
+                                            const email = guestData?.email_guest || "";
+                                            const hasInput = email.length > 0;
+                                            // 簡易的なメアドチェック（@が含まれているか）
+                                            const isValidEmail = email.includes('@') && email.length > 3;
+                                            const isSuccess = regResults.includes(email);
+
+                                            return (
+                                                <li key={name} className={hasInput ? "text-gray-900" : "text-gray-400"}>
+                                                    {name}
+                                                    {isSuccess ? (
+                                                        <span className="ml-2 text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                                                            ✅ 登録完了
+                                                        </span>
+                                                    ) : hasInput ? (
+                                                        <span className="ml-2 text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                                                            招待可能
+                                                        </span>
+                                                    ) : (
+                                                        <span className="ml-2 text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
+                                                            未登録
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            );
+                                        })
+                                    ) : (
+                                        <li className="text-gray-500 list-none">参加予定のゲストはいません</li>
+                                    )}
+                                </ul>
+                            ) : (
+                                <p className="ml-4 mt-1 text-gray-500">※日程を選択すると表示されます</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <p className="text-sm text-gray-600 mb-4">
+                        上記の内容で、自分と参加者のGoogleカレンダーに予定を自動登録し、招待メールを送信します。
+                    </p>
+
+                    <div className={!selectedDateForMessage ? "opacity-50 pointer-events-none grayscale" : ""}>
+                        <CalendarSetButton
+                            eventId={eventId}
+                            eventTitle={event?.title || "未取得"}
+                            selectedDate={selectedDateForMessage}
+                            guestEmails={targetGuestEmails}
+                            onSuccess={(emails) => setRegResults(emails)}
+                        />
+                    </div>
+
                 </div>
 
-            </div>
+            )}
 
             <section
                 style={{

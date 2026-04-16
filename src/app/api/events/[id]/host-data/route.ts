@@ -33,7 +33,7 @@ export async function GET(
 
         const { data: answers, error: answersError } = await supabase
             .from("answers")
-            .select("user_name,selections,target_user_name,guest_suggestion")
+            .select("user_name,selections,target_user_name,guest_suggestion,email_guest")
             .eq("event_id", id)
             .order("user_name", { ascending: true });
 
