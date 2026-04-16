@@ -5,7 +5,7 @@ import { createServerClient } from '@supabase/ssr'; // ※環境に合わせて 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { eventId, selectedDate, googleEventId, guestEmails, eventTitle } = body;
+        const { eventId, selectedDate, googleEventId, guestEmails, eventTitle, googleToken } = body;
 
         // Supabaseクライアントの初期化とセッション取得
         const cookieStore = await cookies();
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         );
 
         const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.provider_token;
+        const token = googleToken || session?.provider_token;
 
         if (!token) {
             return NextResponse.json({ error: 'Googleの認証トークンがありません' }, { status: 401 });

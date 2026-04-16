@@ -122,9 +122,12 @@ export default function GuestPage() {
     const [showLogin, setShowLogin] = useState(false);
     const [pass, setPass] = useState("");
 
+
     const [pageError, setPageError] = useState("");
     const [restoredInfoMessage, setRestoredInfoMessage] = useState("");
     const [restoredKey, setRestoredKey] = useState("");
+
+
 
     const passFromTouched = useRef(false);
     const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

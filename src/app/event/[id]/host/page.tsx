@@ -565,13 +565,15 @@ export default function HostPage() {
                         Googleカレンダーへの登録と、参加者への招待メール送信も完了しています。
                     </p>
 
-                    <div className="flex gap-4 justify-center">
-                        <button className="px-6 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50">
-                            予定を変更する
-                        </button>
-                        <button className="px-6 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg shadow-sm hover:bg-red-100">
-                            確定を取り消す
-                        </button>
+                    <div className="max-w-md mx-auto mt-4">
+                        <CalendarSetButton
+                            eventId={eventId}
+                            eventTitle={event?.title || "未取得"}
+                            selectedDate={selectedDateForMessage}
+                            guestEmails={targetGuestEmails}
+                            googleEventId={event?.google_event_id} // ちゃんとIDを渡す！
+                            onSuccess={(emails) => setRegResults(emails)}
+                        />
                     </div>
                 </div>
             ) : (

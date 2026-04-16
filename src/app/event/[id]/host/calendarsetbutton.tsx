@@ -79,7 +79,7 @@ export default function CalendarSetButton({ eventTitle, selectedDate, guestEmail
             const res = await fetch('/api/calendar/update-event', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ eventId, selectedDate, googleEventId, guestEmails, eventTitle })
+                body: JSON.stringify({ eventId, selectedDate, googleEventId, guestEmails, eventTitle, googleToken: token })
             });
 
             if (res.ok) {
@@ -110,7 +110,7 @@ export default function CalendarSetButton({ eventTitle, selectedDate, guestEmail
             const res = await fetch('/api/calendar/delete-event', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ eventId, googleEventId })
+                body: JSON.stringify({ eventId, googleEventId, googleToken: token })
             });
 
             if (res.ok) {
@@ -135,7 +135,7 @@ export default function CalendarSetButton({ eventTitle, selectedDate, guestEmail
                     type="button"
                     onClick={handleUpdate}
                     disabled={isUpdateDisabled}
-                    className={`w-full py-3 rounded-xl font-bold text-white transition-all ${isUpdateDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                    className={`w-full py-3 rounded-xl font-bold text-white transition-all ${isUpdateDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-400 hover:bg-blue-500'
                         }`}
                 >
                     {loading ? '処理中...' : '日程を変更する'}
@@ -144,7 +144,7 @@ export default function CalendarSetButton({ eventTitle, selectedDate, guestEmail
                     type="button"
                     onClick={handleDelete}
                     disabled={loading}
-                    className={`w-full py-3 rounded-xl font-bold text-white transition-all ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
+                    className={`w-full py-3 rounded-xl font-bold text-white transition-all ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-400 hover:bg-red-500'
                         }`}
                 >
                     {loading ? '処理中...' : 'カレンダーから削除する'}
