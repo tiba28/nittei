@@ -395,12 +395,6 @@ export default function GuestPage() {
                         </button>
 
                         {/* ▼ ここを追加：書かない人はスキップして元の完了画面へ行けるようにする */}
-                        <button
-                            onClick={() => setFeedbackSuccess(true)}
-                            className="w-full mt-3 py-3 rounded-lg font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-all"
-                        >
-                            スキップして完了画面へ
-                        </button>
                     </div>
                 </div>
             </main>
