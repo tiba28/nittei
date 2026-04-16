@@ -651,6 +651,7 @@ export default function HostPage() {
                             eventTitle={event?.title || "未取得"}
                             selectedDate={selectedDateForMessage}
                             guestEmails={targetGuestEmails}
+                            googleEventId={event?.google_event_id}
                             onSuccess={(emails) => setRegResults(emails)}
                         />
                     </div>

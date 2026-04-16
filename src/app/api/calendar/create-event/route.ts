@@ -40,17 +40,22 @@ export async function POST(request: Request) {
         }
     );
 
-    const { error: updateError } = await supabase
+    const { error: dbError } = await supabase
         .from('events')
         .update({
-            confirmed_date: selectedDate,
-            google_event_id: data.id
+            confirmed_date: selectedDate, // リクエストで受け取っている確定日程
+            google_event_id: data.id      // GoogleAPIから返ってきたID
         })
-        .eq('id', eventId);
+        .eq('id', eventId);               // 対象のイベントID
 
-    if (updateError) {
-        return NextResponse.json({ error: "DBの更新に失敗しました" }, { status: 500 });
+    if (dbError) {
+        console.error("Supabaseの更新に失敗しました:", dbError);
+        // 致命的なエラーではないので、カレンダー登録自体は成功として返すか、エラーを返すかは任意です
     }
+
+    // 最後に成功レスポンスを返す（既存の return NextResponse.json({...}) などに繋げる ）
+    return NextResponse.json({ success: true, event: data });
+
 
     return NextResponse.json({ success: true });
 }

@@ -18,7 +18,7 @@ export async function GET(
 
         const { data: eventData, error: eventError } = await supabase
             .from("events")
-            .select("id,title,candidate_dates,password")
+            .select("id,title,candidate_dates,password,confirmed_date,google_event_id")
             .eq("id", id)
             .single();
 
@@ -47,6 +47,8 @@ export async function GET(
                 id: eventData.id,
                 title: eventData.title,
                 candidate_dates: eventData.candidate_dates,
+                confirmed_date: eventData.confirmed_date,
+                google_event_id: eventData.google_event_id,
             },
             answers: answers || [],
         });

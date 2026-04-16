@@ -66,6 +66,8 @@ src/app/api/events/create/route.ts
 src/app/api/premium/area-suggest/route.ts
 src/app/api/premium/place-suggest/route.ts
 src/app/api/suggest/route.ts
+src/app/calendar/delete-event/route.ts
+src/app/calendar/update-event/route.ts
 src/app/event/[id]/host/calendarsetbutton.tsx
 src/app/event/[id]/host/page.tsx
 src/app/event/[id]/page.tsx
@@ -82,6 +84,140 @@ tsconfig.json
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="src/app/calendar/delete-event/route.ts">
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+        const { eventId, googleEventId } = body;
+
+        // Supabaseクライアントの初期化とセッション取得
+        const cookieStore = await cookies();
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    get(name: string) { return cookieStore.get(name)?.value },
+                },
+            }
+        );
+
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.provider_token;
+
+        if (!token) {
+            return NextResponse.json({ error: 'Googleの認証トークンがありません' }, { status: 401 });
+        }
+
+        // 1. Googleカレンダーの予定を削除 (DELETE)
+        const googleRes = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${googleEventId}?sendUpdates=all`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        // DELETEリクエストは成功時に本文がない(204 No Content)ことが多いのでハンドリングを変えます
+        if (!googleRes.ok) {
+            const data = await googleRes.json();
+            return NextResponse.json({ error: data.error.message }, { status: 500 });
+        }
+
+        // 2. Supabaseの「確定日」と「Google予定ID」をリセットする
+        const { error: dbError } = await supabase
+            .from('events')
+            .update({
+                confirmed_date: null,
+                google_event_id: null
+            })
+            .eq('id', eventId);
+
+        if (dbError) {
+            console.error("Supabaseの更新に失敗しました:", dbError);
+        }
+
+        return NextResponse.json({ success: true });
+
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: 'サーバーエラーが発生しました' }, { status: 500 });
+    }
+}
+</file>
+
+<file path="src/app/calendar/update-event/route.ts">
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr'; // ※環境に合わせて @supabase/auth-helpers-nextjs 等に変えてください
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+        const { eventId, selectedDate, googleEventId, guestEmails, eventTitle } = body;
+
+        // Supabaseクライアントの初期化とセッション取得
+        const cookieStore = await cookies();
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    get(name: string) { return cookieStore.get(name)?.value },
+                },
+            }
+        );
+
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.provider_token;
+
+        if (!token) {
+            return NextResponse.json({ error: 'Googleの認証トークンがありません' }, { status: 401 });
+        }
+
+        // 1. Googleカレンダーの予定を更新 (PATCH)
+        const googleRes = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${googleEventId}?sendUpdates=all`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                summary: `【確定】${eventTitle}`,
+                description: `「にってい（nittei）」で調整した以下の日程に変更されました。\n新しい日程: ${selectedDate}`,
+                start: { date: selectedDate },
+                end: { date: selectedDate },
+                attendees: guestEmails.map((email: string) => ({ email })),
+            }),
+        });
+
+        const data = await googleRes.json();
+        if (!googleRes.ok) return NextResponse.json({ error: data.error.message }, { status: 500 });
+
+        // 2. Supabaseの「確定日」を新しい日付で上書きする
+        const { error: dbError } = await supabase
+            .from('events')
+            .update({
+                confirmed_date: selectedDate
+            })
+            .eq('id', eventId);
+
+        if (dbError) {
+            console.error("Supabaseの更新に失敗しました:", dbError);
+        }
+
+        return NextResponse.json({ success: true, event: data });
+
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: 'サーバーエラーが発生しました' }, { status: 500 });
+    }
+}
+</file>
 
 <file path=".gitignore">
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
@@ -522,66 +658,6 @@ export async function POST(
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "送信に失敗しました。" }, { status: 500 });
-    }
-}
-</file>
-
-<file path="src/app/api/events/[id]/host-data/route.ts">
-import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabase } from "../../../../lib/supabase/server";
-import { getHostCookieName, safeEquals, signHostSession } from "../../../../lib/host-session";
-
-export async function GET(
-    req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await params;
-        const cookieValue = req.cookies.get(getHostCookieName(id))?.value;
-
-        if (!cookieValue) {
-            return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-        }
-
-        const supabase = createServerSupabase();
-
-        const { data: eventData, error: eventError } = await supabase
-            .from("events")
-            .select("id,title,candidate_dates,password")
-            .eq("id", id)
-            .single();
-
-        if (eventError || !eventData) {
-            return NextResponse.json({ error: "not found" }, { status: 404 });
-        }
-
-        const expected = signHostSession(id, eventData.password);
-        if (!safeEquals(cookieValue, expected)) {
-            return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-        }
-
-        const { data: answers, error: answersError } = await supabase
-            .from("answers")
-            .select("user_name,selections,target_user_name,guest_suggestion")
-            .eq("event_id", id)
-            .order("user_name", { ascending: true });
-
-        if (answersError) {
-            console.error(answersError);
-            return NextResponse.json({ error: "failed" }, { status: 500 });
-        }
-
-        return NextResponse.json({
-            event: {
-                id: eventData.id,
-                title: eventData.title,
-                candidate_dates: eventData.candidate_dates,
-            },
-            answers: answers || [],
-        });
-    } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: "failed" }, { status: 500 });
     }
 }
 </file>
@@ -1403,65 +1479,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 }
 </file>
 
-<file path="src/app/api/calendar/create-event/route.ts">
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-
-export async function POST(request: Request) {
-    const { eventTitle, selectedDate, guestEmails, googleToken, eventId } = await request.json(); // ★eventIdを追加
-
-    if (!googleToken) {
-        return NextResponse.json({ error: "Google連携が必要です" }, { status: 401 });
-    }
-
-    // 1. Google Calendar API を叩く
-    const googleRes = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events?sendUpdates=all", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${googleToken}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            summary: eventTitle,
-            description: "スマート調整より自動登録されました。",
-            start: { date: selectedDate },
-            end: { date: selectedDate },
-            attendees: guestEmails.map((email: string) => ({ email })),
-        }),
-    });
-
-    const data = await googleRes.json();
-    if (!googleRes.ok) return NextResponse.json({ error: data.error.message }, { status: 500 });
-
-    // 2. ★成功したら、Supabaseに「確定日」と「Google予定ID」を書き込む
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                get(name: string) { return cookieStore.get(name)?.value },
-            },
-        }
-    );
-
-    const { error: updateError } = await supabase
-        .from('events')
-        .update({
-            confirmed_date: selectedDate,
-            google_event_id: data.id
-        })
-        .eq('id', eventId);
-
-    if (updateError) {
-        return NextResponse.json({ error: "DBの更新に失敗しました" }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true });
-}
-</file>
-
 <file path="src/app/api/events/[id]/answer-upsert/route.ts">
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabase } from "../../../../lib/supabase/server";
@@ -1613,78 +1630,65 @@ export async function POST(
 }
 </file>
 
-<file path="src/app/event/[id]/host/calendarsetbutton.tsx">
-'use client'
+<file path="src/app/api/events/[id]/host-data/route.ts">
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabase } from "../../../../lib/supabase/server";
+import { getHostCookieName, safeEquals, signHostSession } from "../../../../lib/host-session";
 
-import { createClient } from '@supabase/supabase-js'
-import { useState } from 'react'
+export async function GET(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const cookieValue = req.cookies.get(getHostCookieName(id))?.value;
 
-interface Props {
-    eventId: string;
-    eventTitle: string;
-    selectedDate: string;
-    guestEmails: string[]; // APIから取得したメールアドレスの配列を渡す
-}
-
-export default function CalendarSetButton({ eventTitle, selectedDate, guestEmails }: Props) {
-    const [loading, setLoading] = useState(false)
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    const handleAction = async () => {
-        setLoading(true)
-
-        // 1. セッションチェック
-        const { data: { session } } = await supabase.auth.getSession()
-
-        const token = session?.provider_token;
-
-        // ログインしていない、またはGoogleの鍵がない場合はログイン画面へ
-        if (!session || !session.provider_token) {
-            await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    scopes: 'https://www.googleapis.com/auth/calendar.events',
-                    queryParams: { access_type: 'offline', prompt: 'consent' },
-                    redirectTo: window.location.href, // ログイン後、今のページに戻る
-                },
-            })
-            return
+        if (!cookieValue) {
+            return NextResponse.json({ error: "unauthorized" }, { status: 401 });
         }
 
-        // 2. 登録APIの呼び出し
-        try {
-            const res = await fetch('/api/calendar/create-event', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ eventTitle, selectedDate, guestEmails, googleToken: token, eventId }),
-            })
+        const supabase = createServerSupabase();
 
-            if (res.ok) {
-                alert('Googleカレンダーへの登録と招待メールの送信が完了しました！')
-            } else {
-                const err = await res.json()
-                alert('エラーが発生しました: ' + err.error)
-            }
-        } catch (e) {
-            alert('通信エラーが発生しました')
-        } finally {
-            setLoading(false)
+        const { data: eventData, error: eventError } = await supabase
+            .from("events")
+            .select("id,title,candidate_dates,password,confirmed_date,google_event_id")
+            .eq("id", id)
+            .single();
+
+        if (eventError || !eventData) {
+            return NextResponse.json({ error: "not found" }, { status: 404 });
         }
+
+        const expected = signHostSession(id, eventData.password);
+        if (!safeEquals(cookieValue, expected)) {
+            return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+        }
+
+        const { data: answers, error: answersError } = await supabase
+            .from("answers")
+            .select("user_name,selections,target_user_name,guest_suggestion,email_guest")
+            .eq("event_id", id)
+            .order("user_name", { ascending: true });
+
+        if (answersError) {
+            console.error(answersError);
+            return NextResponse.json({ error: "failed" }, { status: 500 });
+        }
+
+        return NextResponse.json({
+            event: {
+                id: eventData.id,
+                title: eventData.title,
+                candidate_dates: eventData.candidate_dates,
+                confirmed_date: eventData.confirmed_date,
+                google_event_id: eventData.google_event_id,
+            },
+            answers: answers || [],
+        });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: "failed" }, { status: 500 });
     }
-
-    return (
-        <button
-            onClick={handleAction}
-            disabled={loading || !selectedDate}
-            className={`w-full py-3 rounded-xl font-bold text-white transition-all ${loading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'
-                }`}
-        >
-            {loading ? '処理中...' : 'Googleカレンダーに登録して確定する'}
-        </button>
-    )
 }
 </file>
 
@@ -2556,6 +2560,248 @@ export default function RootLayout({
 }
 </file>
 
+<file path="src/app/api/calendar/create-event/route.ts">
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+
+export async function POST(request: Request) {
+    const { eventTitle, selectedDate, guestEmails, googleToken, eventId } = await request.json(); // ★eventIdを追加
+
+    if (!googleToken) {
+        return NextResponse.json({ error: "Google連携が必要です" }, { status: 401 });
+    }
+
+    // 1. Google Calendar API を叩く
+    const googleRes = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events?sendUpdates=all", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${googleToken}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            summary: `${eventTitle}`,
+            description: `「にってい（nittei）」で調整した以下の日程で確定しました。\n日程: ${selectedDate}\n\n※このメールは日程確定の自動通知です。`,
+            start: { date: selectedDate },
+            end: { date: selectedDate },
+            attendees: guestEmails.map((email: string) => ({ email })),
+        }),
+    });
+
+    const data = await googleRes.json();
+    if (!googleRes.ok) return NextResponse.json({ error: data.error.message }, { status: 500 });
+
+    // 2. ★成功したら、Supabaseに「確定日」と「Google予定ID」を書き込む
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) { return cookieStore.get(name)?.value },
+            },
+        }
+    );
+
+    const { error: dbError } = await supabase
+        .from('events')
+        .update({
+            confirmed_date: selectedDate, // リクエストで受け取っている確定日程
+            google_event_id: data.id      // GoogleAPIから返ってきたID
+        })
+        .eq('id', eventId);               // 対象のイベントID
+
+    if (dbError) {
+        console.error("Supabaseの更新に失敗しました:", dbError);
+        // 致命的なエラーではないので、カレンダー登録自体は成功として返すか、エラーを返すかは任意です
+    }
+
+    // 最後に成功レスポンスを返す（既存の return NextResponse.json({...}) などに繋げる ）
+    return NextResponse.json({ success: true, event: data });
+
+
+    return NextResponse.json({ success: true });
+}
+</file>
+
+<file path="src/app/event/[id]/host/calendarsetbutton.tsx">
+'use client'
+
+import { createClient } from '@supabase/supabase-js'
+import { useState } from 'react'
+
+interface Props {
+    eventId: string;
+    eventTitle: string;
+    selectedDate: string;
+    guestEmails: string[];
+    googleEventId?: string | null;
+    onSuccess?: (emails: string[]) => void;
+}
+
+export default function CalendarSetButton({ eventTitle, selectedDate, guestEmails, eventId, googleEventId, onSuccess }: Props) {
+    const [loading, setLoading] = useState(false)
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    const checkSessionAndToken = async () => {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session || !session.provider_token) {
+            await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    scopes: 'https://www.googleapis.com/auth/calendar.events',
+                    queryParams: { access_type: 'offline', prompt: 'consent' },
+                    redirectTo: window.location.href,
+                },
+            })
+            return null;
+        }
+        return session.provider_token;
+    }
+
+    const handleCreate = async (e: React.MouseEvent) => {
+        e.preventDefault(); // フォーム送信を防ぐ
+        setLoading(true)
+        try {
+            const token = await checkSessionAndToken();
+            if (!token) return;
+
+            const res = await fetch('/api/calendar/create-event', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ eventTitle, selectedDate, guestEmails, googleToken: token, eventId }),
+            })
+
+            if (res.ok) {
+                alert('Googleカレンダーへの登録が完了しました！');
+                if (onSuccess) onSuccess(guestEmails);
+                window.location.reload();
+            } else {
+                const err = await res.json()
+                alert('エラーが発生しました: ' + err.error)
+            }
+        } catch (e) {
+            alert('通信エラーが発生しました')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleUpdate = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        console.log("変更ボタンが押されました！", { googleEventId, selectedDate });
+
+        if (!googleEventId) return;
+        if (!selectedDate) {
+            alert("先に、変更したい新しい日程を画面から選択してください！");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            // トークン切れ対策
+            const token = await checkSessionAndToken();
+            if (!token) return;
+
+            const res = await fetch('/api/calendar/update-event', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ eventId, selectedDate, googleEventId, guestEmails, eventTitle })
+            });
+
+            if (res.ok) {
+                alert('カレンダーの日程を変更しました！');
+                if (onSuccess) onSuccess(guestEmails);
+                window.location.reload();
+            } else {
+                const err = await res.json();
+                alert('変更に失敗しました: ' + (err.error || '不明なエラー'));
+            }
+        } catch (e) {
+            alert('通信エラーが発生しました');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDelete = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        console.log("削除ボタンが押されました！", { googleEventId });
+
+        if (!googleEventId) return;
+        if (!confirm('本当にカレンダーから予定を削除して未確定に戻しますか？')) return;
+
+        setLoading(true);
+        try {
+            // トークン切れ対策
+            const token = await checkSessionAndToken();
+            if (!token) return;
+
+            const res = await fetch('/api/calendar/delete-event', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ eventId, googleEventId })
+            });
+
+            if (res.ok) {
+                alert('カレンダーから予定を削除しました');
+                window.location.reload();
+            } else {
+                const err = await res.json();
+                alert('削除に失敗しました: ' + (err.error || '不明なエラー'));
+            }
+        } catch (e) {
+            alert('通信エラーが発生しました');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (googleEventId) {
+        // 更新ボタン：selectedDateが無いときは灰色にして押せないことを視覚的にアピール
+        const isUpdateDisabled = loading || !selectedDate;
+
+        return (
+            <div className="flex gap-4">
+                <button
+                    type="button"
+                    onClick={handleUpdate}
+                    disabled={isUpdateDisabled}
+                    className={`w-full py-3 rounded-xl font-bold text-white transition-all ${isUpdateDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
+                >
+                    {loading ? '処理中...' : '日程を変更する'}
+                </button>
+                <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={loading}
+                    className={`w-full py-3 rounded-xl font-bold text-white transition-all ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
+                        }`}
+                >
+                    {loading ? '処理中...' : 'カレンダーから削除する'}
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <button
+            type="button"
+            onClick={handleCreate}
+            disabled={loading || !selectedDate}
+            className={`w-full py-3 rounded-xl font-bold text-white transition-all ${loading || !selectedDate ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+                }`}
+        >
+            {loading ? '処理中...' : 'Googleカレンダーに登録して確定する'}
+        </button>
+    )
+}
+</file>
+
 <file path="package.json">
 {
   "name": "smart-chose",
@@ -2633,6 +2879,352 @@ Supabase (RLS): 扱いやすいデータべースであり、複雑な条件分�
 ２．セキュリティと責任： 将来的に「課金機能」としての実装も視野に入れましたが、決済情報や位置情報などの機密データを扱うには、現状の自身のセキュリティ実装スキルではユーザーに対する責任が果たせないと判断しました。
 
 リスク管理の観点から未熟な状態での無理な多機能化を避け、まずは正しく動くものを作成し公開することを優先しました。
+</file>
+
+<file path="src/app/page.tsx">
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function CreateEvent() {
+  const router = useRouter();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [password, setPassword] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [finalCandidateDates, setFinalCandidateDates] = useState<string[]>([]);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [viewDate, setViewDate] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+  );
+
+  const changeMonth = (offset: number) => {
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + offset, 1));
+  };
+
+  const createAndShareEvent = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch("/api/events/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          password,
+          deadline,
+          candidate_dates: finalCandidateDates,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "イベント作成に失敗しました。");
+      }
+
+      const eventId = data.id;
+      const shareUrl = `${window.location.origin}/event/${eventId}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title,
+            text: `イベント「${title}」の日程調整をお願いします！`,
+            url: shareUrl,
+          });
+        } catch {
+          await navigator.clipboard.writeText(shareUrl);
+        }
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("URLをコピーしました！友達に送ってください。");
+      }
+
+      router.push(`/event/${eventId}`);
+    } catch (error: any) {
+      alert(error?.message || "作成に失敗しました。");
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isConfirming) {
+    return (
+      <main
+        style={{
+          padding: "20px",
+          maxWidth: "450px",
+          margin: "0 auto",
+          color: "black",
+          backgroundColor: "white",
+          minHeight: "100vh",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <h1 style={{ textAlign: "center", fontSize: "22px" }}>📅 予定調整ツールA</h1>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: "16px",
+            lineHeight: "1.8",
+            margin: "0 auto 24px",
+            maxWidth: "720px",
+          }}
+        >
+          nitteiは、参加者同士に回答を見せずに日程調整ができるツールです。
+          候補日を作成して回答を集めるだけでなく、表では出しにくい条件も記入できます。
+          ホストは回答をまとめて確認でき、日程決定後の連絡文面作成まで進められます。
+        </p>
+
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <section>
+            <label style={{ fontWeight: "bold" }}>1. イベント名</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ccc" }}
+            />
+          </section>
+
+          <section>
+            <label style={{ fontWeight: "bold" }}>2. イベント詳細（場所・予算など）</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+                border: "1px solid #ccc",
+                minHeight: "80px",
+                marginTop: "5px",
+              }}
+            />
+          </section>
+
+          <section>
+            <label style={{ fontWeight: "bold" }}>3. パスワード & 期限</label>
+            <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
+              <input
+                type="password"
+                placeholder="パスワード"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
+              />
+              <input
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
+              />
+            </div>
+          </section>
+
+          <section style={{ border: "1px solid #eee", padding: "15px", borderRadius: "15px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <label style={{ fontWeight: "bold" }}>4. 候補日を選択</label>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => changeMonth(-1)}
+                  style={{
+                    border: "none",
+                    background: "#f0f0f0",
+                    padding: "5px 12px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ＜
+                </button>
+                <span style={{ fontSize: "14px", fontWeight: "bold", minWidth: "100px", textAlign: "center" }}>
+                  {viewDate.getFullYear()}年 {viewDate.getMonth() + 1}月
+                </span>
+                <button
+                  type="button"
+                  onClick={() => changeMonth(1)}
+                  style={{
+                    border: "none",
+                    background: "#f0f0f0",
+                    padding: "5px 12px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ＞
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "5px", textAlign: "center" }}>
+              {["日", "月", "火", "水", "木", "金", "土"].map((w, i) => (
+                <div
+                  key={w}
+                  style={{
+                    fontSize: "12px",
+                    color: i === 0 ? "#e53e3e" : i === 6 ? "#3182ce" : "#999",
+                    paddingBottom: "5px",
+                  }}
+                >
+                  {w}
+                </div>
+              ))}
+              {(() => {
+                const year = viewDate.getFullYear();
+                const month = viewDate.getMonth();
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
+                const days = [];
+                for (let i = 0; i < firstDayOfMonth; i++) days.push(<div key={`empty-${i}`} />);
+                for (let d = 1; d <= lastDateOfMonth; d++) {
+                  const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+                  const isSelected = finalCandidateDates.includes(dateStr);
+                  days.push(
+                    <div
+                      key={dateStr}
+                      onClick={() => {
+                        if (isSelected) setFinalCandidateDates(finalCandidateDates.filter((item) => item !== dateStr));
+                        else setFinalCandidateDates([...finalCandidateDates, dateStr]);
+                      }}
+                      style={{
+                        padding: "10px 0",
+                        borderRadius: "8px",
+                        backgroundColor: isSelected ? "#333" : "white",
+                        color: isSelected ? "white" : "black",
+                        border: "1px solid #eee",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: isSelected ? "bold" : "normal",
+                        transition: "0.1s",
+                      }}
+                    >
+                      {d}
+                    </div>
+                  );
+                }
+                return days;
+              })()}
+            </div>
+          </section>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (!title || !password || !deadline || finalCandidateDates.length === 0) {
+                return alert("入力が足りません");
+              }
+              setIsConfirming(true);
+            }}
+            style={{
+              padding: "18px",
+              backgroundColor: "#000",
+              color: "white",
+              borderRadius: "12px",
+              fontWeight: "bold",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            確認画面へ
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main
+      style={{
+        padding: "20px",
+        maxWidth: "450px",
+        margin: "0 auto",
+        backgroundColor: "white",
+        color: "black",
+        minHeight: "100vh",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h2 style={{ textAlign: "center" }}>📝 最終確認</h2>
+      <div style={{ border: "1px solid #eee", padding: "20px", borderRadius: "15px", marginTop: "20px" }}>
+        <p><strong>イベント名:</strong> {title}</p>
+        <p style={{ fontSize: "14px", color: "#666" }}><strong>詳細:</strong> {description || "なし"}</p>
+        <p><strong>回答期限:</strong> {deadline}</p>
+        <p><strong>候補日:</strong> {finalCandidateDates.length}件</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
+          {finalCandidateDates.sort().map((d) => {
+            const dateObj = new Date(d);
+            return (
+              <span
+                key={d}
+                style={{
+                  fontSize: "12px",
+                  backgroundColor: "#f0f0f0",
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  border: "1px solid #e0e0e0",
+                }}
+              >
+                {dateObj.getMonth() + 1}/{dateObj.getDate()}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
+        <button
+          type="button"
+          onClick={createAndShareEvent}
+          disabled={isSubmitting}
+          style={{
+            padding: "18px",
+            backgroundColor: "#28a745",
+            color: "white",
+            borderRadius: "12px",
+            border: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
+        >
+          {isSubmitting ? "作成中..." : "発行して共有する"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsConfirming(false)}
+          style={{
+            padding: "12px",
+            border: "none",
+            background: "none",
+            color: "#666",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          修正する
+        </button>
+      </div>
+    </main>
+  );
+}
 </file>
 
 <file path="src/app/event/[id]/host/page.tsx">
@@ -2836,6 +3428,8 @@ export default function HostPage() {
         environment: "none",
         needs: [],
     });
+
+    const [regResults, setRegResults] = useState<string[]>([]);
 
     const [premiumInfoMessage, setPremiumInfoMessage] = useState("");
     const [interestLoading, setInterestLoading] = useState(false);
@@ -3246,20 +3840,19 @@ export default function HostPage() {
                                             const hasInput = email.length > 0;
                                             // 簡易的なメアドチェック（@が含まれているか）
                                             const isValidEmail = email.includes('@') && email.length > 3;
+                                            const isSuccess = regResults.includes(email);
 
                                             return (
                                                 <li key={name} className={hasInput ? "text-gray-900" : "text-gray-400"}>
                                                     {name}
-                                                    {hasInput ? (
-                                                        isValidEmail ? (
-                                                            <span className="ml-2 text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
-                                                                招待を送信します
-                                                            </span>
-                                                        ) : (
-                                                            <span className="ml-2 text-[10px] text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200 font-bold">
-                                                                ⚠️ 入力不備（届きません）
-                                                            </span>
-                                                        )
+                                                    {isSuccess ? (
+                                                        <span className="ml-2 text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                                                            ✅ 登録完了
+                                                        </span>
+                                                    ) : hasInput ? (
+                                                        <span className="ml-2 text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                                                            招待可能
+                                                        </span>
                                                     ) : (
                                                         <span className="ml-2 text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
                                                             未登録
@@ -3284,10 +3877,11 @@ export default function HostPage() {
 
                     <div className={!selectedDateForMessage ? "opacity-50 pointer-events-none grayscale" : ""}>
                         <CalendarSetButton
-                            eventId={eventId}  // ★ここを追加
+                            eventId={eventId}
                             eventTitle={event?.title || "未取得"}
                             selectedDate={selectedDateForMessage}
                             guestEmails={targetGuestEmails}
+                            onSuccess={(emails) => setRegResults(emails)}
                         />
                     </div>
 
@@ -3737,352 +4331,6 @@ export default function HostPage() {
             </section>
         </main>
     );
-}
-</file>
-
-<file path="src/app/page.tsx">
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-export default function CreateEvent() {
-  const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [password, setPassword] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [finalCandidateDates, setFinalCandidateDates] = useState<string[]>([]);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [viewDate, setViewDate] = useState(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-  );
-
-  const changeMonth = (offset: number) => {
-    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + offset, 1));
-  };
-
-  const createAndShareEvent = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-
-    try {
-      const res = await fetch("/api/events/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          password,
-          deadline,
-          candidate_dates: finalCandidateDates,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || "イベント作成に失敗しました。");
-      }
-
-      const eventId = data.id;
-      const shareUrl = `${window.location.origin}/event/${eventId}`;
-
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title,
-            text: `イベント「${title}」の日程調整をお願いします！`,
-            url: shareUrl,
-          });
-        } catch {
-          await navigator.clipboard.writeText(shareUrl);
-        }
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        alert("URLをコピーしました！友達に送ってください。");
-      }
-
-      router.push(`/event/${eventId}`);
-    } catch (error: any) {
-      alert(error?.message || "作成に失敗しました。");
-      setIsSubmitting(false);
-    }
-  };
-
-  if (!isConfirming) {
-    return (
-      <main
-        style={{
-          padding: "20px",
-          maxWidth: "450px",
-          margin: "0 auto",
-          color: "black",
-          backgroundColor: "white",
-          minHeight: "100vh",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <h1 style={{ textAlign: "center", fontSize: "22px" }}>📅 予定調整ツールA</h1>
-        <p
-          style={{
-            textAlign: "center",
-            fontSize: "16px",
-            lineHeight: "1.8",
-            margin: "0 auto 24px",
-            maxWidth: "720px",
-          }}
-        >
-          nitteiは、参加者同士に回答を見せずに日程調整ができるツールです。
-          候補日を作成して回答を集めるだけでなく、表では出しにくい条件も記入できます。
-          ホストは回答をまとめて確認でき、日程決定後の連絡文面作成まで進められます。
-        </p>
-
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <section>
-            <label style={{ fontWeight: "bold" }}>1. イベント名</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ccc" }}
-            />
-          </section>
-
-          <section>
-            <label style={{ fontWeight: "bold" }}>2. イベント詳細（場所・予算など）</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "10px",
-                border: "1px solid #ccc",
-                minHeight: "80px",
-                marginTop: "5px",
-              }}
-            />
-          </section>
-
-          <section>
-            <label style={{ fontWeight: "bold" }}>3. パスワード & 期限</label>
-            <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
-              <input
-                type="password"
-                placeholder="パスワード"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
-              />
-              <input
-                type="date"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
-              />
-            </div>
-          </section>
-
-          <section style={{ border: "1px solid #eee", padding: "15px", borderRadius: "15px" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "10px",
-              }}
-            >
-              <label style={{ fontWeight: "bold" }}>4. 候補日を選択</label>
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <button
-                  type="button"
-                  onClick={() => changeMonth(-1)}
-                  style={{
-                    border: "none",
-                    background: "#f0f0f0",
-                    padding: "5px 12px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ＜
-                </button>
-                <span style={{ fontSize: "14px", fontWeight: "bold", minWidth: "100px", textAlign: "center" }}>
-                  {viewDate.getFullYear()}年 {viewDate.getMonth() + 1}月
-                </span>
-                <button
-                  type="button"
-                  onClick={() => changeMonth(1)}
-                  style={{
-                    border: "none",
-                    background: "#f0f0f0",
-                    padding: "5px 12px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ＞
-                </button>
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "5px", textAlign: "center" }}>
-              {["日", "月", "火", "水", "木", "金", "土"].map((w, i) => (
-                <div
-                  key={w}
-                  style={{
-                    fontSize: "12px",
-                    color: i === 0 ? "#e53e3e" : i === 6 ? "#3182ce" : "#999",
-                    paddingBottom: "5px",
-                  }}
-                >
-                  {w}
-                </div>
-              ))}
-              {(() => {
-                const year = viewDate.getFullYear();
-                const month = viewDate.getMonth();
-                const firstDayOfMonth = new Date(year, month, 1).getDay();
-                const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
-                const days = [];
-                for (let i = 0; i < firstDayOfMonth; i++) days.push(<div key={`empty-${i}`} />);
-                for (let d = 1; d <= lastDateOfMonth; d++) {
-                  const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-                  const isSelected = finalCandidateDates.includes(dateStr);
-                  days.push(
-                    <div
-                      key={dateStr}
-                      onClick={() => {
-                        if (isSelected) setFinalCandidateDates(finalCandidateDates.filter((item) => item !== dateStr));
-                        else setFinalCandidateDates([...finalCandidateDates, dateStr]);
-                      }}
-                      style={{
-                        padding: "10px 0",
-                        borderRadius: "8px",
-                        backgroundColor: isSelected ? "#333" : "white",
-                        color: isSelected ? "white" : "black",
-                        border: "1px solid #eee",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        fontWeight: isSelected ? "bold" : "normal",
-                        transition: "0.1s",
-                      }}
-                    >
-                      {d}
-                    </div>
-                  );
-                }
-                return days;
-              })()}
-            </div>
-          </section>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (!title || !password || !deadline || finalCandidateDates.length === 0) {
-                return alert("入力が足りません");
-              }
-              setIsConfirming(true);
-            }}
-            style={{
-              padding: "18px",
-              backgroundColor: "#000",
-              color: "white",
-              borderRadius: "12px",
-              fontWeight: "bold",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            確認画面へ
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <main
-      style={{
-        padding: "20px",
-        maxWidth: "450px",
-        margin: "0 auto",
-        backgroundColor: "white",
-        color: "black",
-        minHeight: "100vh",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <h2 style={{ textAlign: "center" }}>📝 最終確認</h2>
-      <div style={{ border: "1px solid #eee", padding: "20px", borderRadius: "15px", marginTop: "20px" }}>
-        <p><strong>イベント名:</strong> {title}</p>
-        <p style={{ fontSize: "14px", color: "#666" }}><strong>詳細:</strong> {description || "なし"}</p>
-        <p><strong>回答期限:</strong> {deadline}</p>
-        <p><strong>候補日:</strong> {finalCandidateDates.length}件</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
-          {finalCandidateDates.sort().map((d) => {
-            const dateObj = new Date(d);
-            return (
-              <span
-                key={d}
-                style={{
-                  fontSize: "12px",
-                  backgroundColor: "#f0f0f0",
-                  padding: "4px 10px",
-                  borderRadius: "20px",
-                  border: "1px solid #e0e0e0",
-                }}
-              >
-                {dateObj.getMonth() + 1}/{dateObj.getDate()}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
-        <button
-          type="button"
-          onClick={createAndShareEvent}
-          disabled={isSubmitting}
-          style={{
-            padding: "18px",
-            backgroundColor: "#28a745",
-            color: "white",
-            borderRadius: "12px",
-            border: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
-        >
-          {isSubmitting ? "作成中..." : "発行して共有する"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setIsConfirming(false)}
-          style={{
-            padding: "12px",
-            border: "none",
-            background: "none",
-            color: "#666",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
-        >
-          修正する
-        </button>
-      </div>
-    </main>
-  );
 }
 </file>
 
