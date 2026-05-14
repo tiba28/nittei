@@ -51,6 +51,10 @@ export async function POST(request: Request) {
 
         if (dbError) {
             console.error("Supabaseの更新に失敗しました:", dbError);
+            return NextResponse.json(
+                { error: "Googleカレンダーの削除は成功しましたが、DBの更新に失敗しました" },
+                { status: 500 }
+            );
         }
 
         return NextResponse.json({ success: true });
