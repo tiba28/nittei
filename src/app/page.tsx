@@ -9,8 +9,32 @@ export default function CreateEvent() {
   const [password, setPassword] = useState("");
   const [deadline, setDeadline] = useState("");
   const [finalCandidateDates, setFinalCandidateDates] = useState<string[]>([]);
+  const [guestNames, setGuestNames] = useState<string[]>([]);
+  const [guestNameInput, setGuestNameInput] = useState("");
+  const [guestNameError, setGuestNameError] = useState("");
+  const [allowCustomName, setAllowCustomName] = useState(true);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const addGuestName = () => {
+    const trimmed = guestNameInput.trim().replace(/[ 　]/g, "");
+    if (!trimmed) return;
+    if (!/^[ぁ-んァ-ヶー一-龠々a-zA-Z]+$/.test(trimmed)) {
+      setGuestNameError("ひらがな・カタカナ・漢字・英字のみで入力してください。");
+      return;
+    }
+    if (trimmed.length < 2) {
+      setGuestNameError("2文字以上で入力してください。");
+      return;
+    }
+    if (guestNames.includes(trimmed)) {
+      setGuestNameError("その名前はすでに追加されています。");
+      return;
+    }
+    setGuestNames([...guestNames, trimmed]);
+    setGuestNameInput("");
+    setGuestNameError("");
+  };
 
   const [viewDate, setViewDate] = useState(
     new Date(new Date().getFullYear(), new Date().getMonth(), 1)
@@ -36,6 +60,8 @@ export default function CreateEvent() {
           password,
           deadline,
           candidate_dates: finalCandidateDates,
+          guest_names: guestNames,
+          allow_custom_name: allowCustomName,
         }),
       });
 
@@ -241,6 +267,97 @@ export default function CreateEvent() {
             </div>
           </section>
 
+          <section style={{ border: "1px solid #eee", padding: "15px", borderRadius: "15px" }}>
+            <label style={{ fontWeight: "bold" }}>5. 招待予定のゲスト名（任意）</label>
+            <p style={{ fontSize: "12px", color: "#666", margin: "6px 0 12px" }}>
+              参加者の名前を事前に登録しておくと、ゲストが名前を選んで回答できます。
+              <br />ひらがな・カタカナ・漢字・英字のみ、スペース不可。
+            </p>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+              <input
+                type="text"
+                value={guestNameInput}
+                onChange={(e) => { setGuestNameInput(e.target.value); setGuestNameError(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addGuestName(); } }}
+                placeholder="例: 山田太郎"
+                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
+              />
+              <button
+                type="button"
+                onClick={addGuestName}
+                style={{
+                  padding: "10px 16px",
+                  backgroundColor: "#000",
+                  color: "white",
+                  borderRadius: "10px",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                追加
+              </button>
+            </div>
+            {guestNameError && (
+              <p style={{ fontSize: "12px", color: "#c53030", marginBottom: "8px" }}>{guestNameError}</p>
+            )}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {guestNames.map((name) => (
+                <span
+                  key={name}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    backgroundColor: "#f0f0f0",
+                    padding: "6px 12px",
+                    borderRadius: "999px",
+                    fontSize: "13px",
+                  }}
+                >
+                  {name}
+                  <button
+                    type="button"
+                    onClick={() => setGuestNames(guestNames.filter((n) => n !== name))}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#666",
+                      padding: "0",
+                      fontSize: "14px",
+                      lineHeight: 1,
+                    }}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            {guestNames.length > 0 && (
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: "14px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  color: "#444",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={allowCustomName}
+                  onChange={(e) => setAllowCustomName(e.target.checked)}
+                  style={{ width: "16px", height: "16px", cursor: "pointer" }}
+                />
+                リスト外の名前も自分で入力できるようにする
+              </label>
+            )}
+          </section>
+
           <button
             type="button"
             onClick={() => {
@@ -284,6 +401,12 @@ export default function CreateEvent() {
         <p style={{ fontSize: "14px", color: "#666" }}><strong>詳細:</strong> {description || "なし"}</p>
         <p><strong>回答期限:</strong> {deadline}</p>
         <p><strong>候補日:</strong> {finalCandidateDates.length}件</p>
+        {guestNames.length > 0 && (
+          <>
+            <p><strong>招待ゲスト名:</strong> {guestNames.join("、")}</p>
+            <p><strong>自由入力:</strong> {allowCustomName ? "許可" : "不可（リストから選択のみ）"}</p>
+          </>
+        )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
           {finalCandidateDates.sort().map((d) => {
             const dateObj = new Date(d);

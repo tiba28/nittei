@@ -9,6 +9,8 @@ type EventRow = {
     deadline?: string;
     candidate_dates?: string[];
     plan_description?: string;
+    guest_names?: string[];
+    allow_custom_name?: boolean;
 };
 
 type AnswerNameRow = {
@@ -117,6 +119,8 @@ export default function GuestPage() {
     const [homeStation, setHomeStation] = useState("");
     const [passFrom, setPassFrom] = useState("");
     const [passTo, setPassTo] = useState("");
+
+    const [selectedPresetName, setSelectedPresetName] = useState<string | null>(null);
 
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
@@ -254,6 +258,10 @@ export default function GuestPage() {
         };
     }, [userName, userPassCode, eventId, restoredKey]);
 
+    const answeredNamesSet = useMemo(() => {
+        return new Set(answers.map((a) => normalizeName(a.user_name)).filter(Boolean));
+    }, [answers]);
+
     const answerNames = useMemo(() => {
         const currentNormalizedName = normalizeName(userName);
         return answers
@@ -262,6 +270,25 @@ export default function GuestPage() {
             .filter((name) => normalizeName(name) !== currentNormalizedName);
     }, [answers, userName]);
 
+    // 裏条件チップ用: ホスト設定名 + 回答済み名 を統合（重複除去、自分を除外）
+    const conditionCandidateNames = useMemo(() => {
+        const currentNormalized = normalizeName(userName);
+        const seen = new Set<string>();
+        const result: string[] = [];
+
+        const push = (name: string) => {
+            const n = normalizeName(name);
+            if (!n || n === currentNormalized || seen.has(n)) return;
+            seen.add(n);
+            result.push(name);
+        };
+
+        (event?.guest_names ?? []).forEach(push);
+        answerNames.forEach(push);
+
+        return result;
+    }, [event?.guest_names, answerNames, userName]);
+
     if (!event) {
         return <div style={{ padding: "40px", textAlign: "center" }}>読み込み中...</div>;
     }
@@ -269,6 +296,9 @@ export default function GuestPage() {
     const isExpired = event.deadline
         ? new Date().getTime() > new Date(event.deadline).setHours(23, 59, 50, 0)
         : false;
+
+    const hasPreset = (event.guest_names ?? []).length > 0;
+    const showFreeInput = !hasPreset || event.allow_custom_name !== false || selectedPresetName !== null;
 
     const submit = async () => {
         setPageError("");
@@ -491,52 +521,128 @@ export default function GuestPage() {
 
             {!isSubmitted ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginTop: "20px" }}>
-                    <section style={{ display: "flex", gap: "10px" }}>
-                        <div style={{ flex: 2 }}>
-                            <label style={{ fontWeight: "bold", fontSize: "14px" }}>名前</label>
-                            <input
-                                type="text"
-                                disabled={isExpired}
-                                placeholder="例: 山田太郎"
-                                value={userName}
-                                onChange={(e) => setUserName(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "12px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    marginTop: "5px",
-                                }}
-                            />
-                            <div style={{ fontSize: "12px", color: "#666", marginTop: "6px", lineHeight: 1.6 }}>
-                                ・フルネーム推奨です
-                                <br />
-                                ・ひらがな / カタカナ / 漢字 / 英字で入力してください
-                                <br />
-                                ・スペースや記号は使えません
-                                <br />
-                                ・英字は内部で小文字として扱います
+                    <section>
+                        {(event.guest_names ?? []).length > 0 && (
+                            <div style={{ marginBottom: "16px" }}>
+                                <label style={{ fontWeight: "bold", fontSize: "14px" }}>あなたの名前を選んでください</label>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
+                                    {(event.guest_names ?? []).map((name) => {
+                                        const isAnswered = answeredNamesSet.has(normalizeName(name));
+                                        const isSelected = selectedPresetName === name;
+                                        return (
+                                            <button
+                                                key={name}
+                                                type="button"
+                                                disabled={isExpired}
+                                                onClick={() => {
+                                                    if (isSelected) {
+                                                        setSelectedPresetName(null);
+                                                        setUserName("");
+                                                    } else {
+                                                        setSelectedPresetName(name);
+                                                        setUserName(name);
+                                                    }
+                                                }}
+                                                style={{
+                                                    position: "relative",
+                                                    border: "1px solid #ddd",
+                                                    borderRadius: "999px",
+                                                    padding: "10px 16px",
+                                                    background: isSelected ? "#111" : isAnswered ? "#e8e8e8" : "#fff",
+                                                    color: isSelected ? "#fff" : "#333",
+                                                    cursor: isExpired ? "default" : "pointer",
+                                                    fontSize: "13px",
+                                                    fontWeight: isSelected ? "bold" : "normal",
+                                                }}
+                                            >
+                                                {name}
+                                                {isAnswered && !isSelected && (
+                                                    <span style={{
+                                                        marginLeft: "6px",
+                                                        fontSize: "10px",
+                                                        color: "#888",
+                                                        backgroundColor: "#d0d0d0",
+                                                        borderRadius: "999px",
+                                                        padding: "1px 6px",
+                                                    }}>
+                                                        済
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <div style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>
+                                    ※「済」は回答が完了した人です
+                                </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div style={{ flex: 1 }}>
-                            <label style={{ fontWeight: "bold", fontSize: "14px" }}>認証パス</label>
-                            <input
-                                type="password"
-                                disabled={isExpired}
-                                placeholder="4文字以上"
-                                value={userPassCode}
-                                onChange={(e) => setUserPassCode(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "12px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    marginTop: "5px",
-                                }}
-                            />
-                            <div style={{ fontSize: "12px", color: "#666", marginTop: "6px", lineHeight: 1.6 }}>
-                                回答を修正するときに必要です
+                        <div style={{ display: "flex", gap: "10px" }}>
+                            <div style={{ flex: 2 }}>
+                                {!showFreeInput ? (
+                                    <div style={{ fontSize: "13px", color: "#888", marginTop: "6px" }}>
+                                        上のリストから名前を選んでください
+                                    </div>
+                                ) : (
+                                    <>
+                                        <label style={{ fontWeight: "bold", fontSize: "14px" }}>
+                                            {hasPreset ? "または自分で入力" : "名前"}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            disabled={isExpired || selectedPresetName !== null}
+                                            placeholder={selectedPresetName !== null ? selectedPresetName : "例: 山田太郎"}
+                                            value={selectedPresetName !== null ? selectedPresetName : userName}
+                                            onChange={(e) => setUserName(e.target.value)}
+                                            style={{
+                                                width: "100%",
+                                                padding: "12px",
+                                                borderRadius: "10px",
+                                                border: "1px solid #ccc",
+                                                marginTop: "5px",
+                                                backgroundColor: selectedPresetName !== null ? "#f5f5f5" : "white",
+                                                color: selectedPresetName !== null ? "#888" : "black",
+                                            }}
+                                        />
+                                        {selectedPresetName !== null ? (
+                                            <div style={{ fontSize: "12px", color: "#888", marginTop: "6px" }}>
+                                                上のチップをもう一度タップで選択解除できます
+                                            </div>
+                                        ) : (
+                                            <div style={{ fontSize: "12px", color: "#666", marginTop: "6px", lineHeight: 1.6 }}>
+                                                ・フルネーム推奨です
+                                                <br />
+                                                ・ひらがな / カタカナ / 漢字 / 英字で入力してください
+                                                <br />
+                                                ・スペースや記号は使えません
+                                                <br />
+                                                ・英字は内部で小文字として扱います
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            <div style={{ flex: 1 }}>
+                                <label style={{ fontWeight: "bold", fontSize: "14px" }}>認証パス</label>
+                                <input
+                                    type="password"
+                                    disabled={isExpired}
+                                    placeholder="4文字以上"
+                                    value={userPassCode}
+                                    onChange={(e) => setUserPassCode(e.target.value)}
+                                    style={{
+                                        width: "100%",
+                                        padding: "12px",
+                                        borderRadius: "10px",
+                                        border: "1px solid #ccc",
+                                        marginTop: "5px",
+                                    }}
+                                />
+                                <div style={{ fontSize: "12px", color: "#666", marginTop: "6px", lineHeight: 1.6 }}>
+                                    回答を修正するときに必要です
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -660,7 +766,7 @@ export default function GuestPage() {
                                 この人たちが来るなら行く（選択）
                             </div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                                {answerNames.map((name) => (
+                                {conditionCandidateNames.map((name) => (
                                     <button
                                         key={`with-${name}`}
                                         type="button"
@@ -706,7 +812,7 @@ export default function GuestPage() {
                                 この人たちが来るなら行かない（選択）
                             </div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                                {answerNames.map((name) => (
+                                {conditionCandidateNames.map((name) => (
                                     <button
                                         key={`without-${name}`}
                                         type="button"

@@ -12,6 +12,10 @@ export async function POST(req: NextRequest) {
         const candidateDates = Array.isArray(body?.candidate_dates)
             ? body.candidate_dates.map((v: unknown) => String(v))
             : [];
+        const guestNames = Array.isArray(body?.guest_names)
+            ? body.guest_names.map((v: unknown) => String(v)).filter(Boolean)
+            : [];
+        const allowCustomName = body?.allow_custom_name !== false;
 
         if (!title || !password || !deadline || candidateDates.length === 0) {
             return NextResponse.json(
@@ -32,6 +36,8 @@ export async function POST(req: NextRequest) {
                     password,
                     deadline,
                     candidate_dates: candidateDates,
+                    guest_names: guestNames,
+                    allow_custom_name: allowCustomName,
                 },
             ])
             .select("id")
