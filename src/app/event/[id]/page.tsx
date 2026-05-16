@@ -61,15 +61,37 @@ const CountdownTimer = ({ deadlineStr }: { deadlineStr: string }) => {
                 fontSize: "14px",
             }}
         >
-            ⏳ 回答締切まで：{timeLeft}
+            回答締切まで：{timeLeft}
         </div>
     );
 };
 
+const JAPAN_HOLIDAYS = new Set([
+    "2025-01-01", "2025-01-13", "2025-02-11", "2025-02-23", "2025-03-20",
+    "2025-04-29", "2025-05-03", "2025-05-04", "2025-05-05", "2025-07-21",
+    "2025-08-11", "2025-09-15", "2025-09-23", "2025-10-13", "2025-11-03",
+    "2025-11-23", "2025-11-24",
+    "2026-01-01", "2026-01-12", "2026-02-11", "2026-02-23", "2026-03-20",
+    "2026-04-29", "2026-05-03", "2026-05-04", "2026-05-05", "2026-07-20",
+    "2026-08-11", "2026-09-21", "2026-09-23", "2026-10-12", "2026-11-03",
+    "2026-11-23",
+]);
+
 function formatDateLabel(dateStr: string) {
     const d = new Date(dateStr);
-    if (Number.isNaN(d.getTime())) return dateStr;
-    return `${d.getMonth() + 1}/${d.getDate()}`;
+    if (Number.isNaN(d.getTime())) return <span>{dateStr}</span>;
+    const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+    const dayIndex = d.getDay();
+    const isRed = dayIndex === 0 || dayIndex === 6 || JAPAN_HOLIDAYS.has(dateStr);
+    const dayColor = isRed ? "#e53e3e" : "#999";
+    return (
+        <span>
+            {d.getMonth() + 1}/{d.getDate()}
+            <span style={{ fontSize: "12px", color: dayColor, marginLeft: "4px" }}>
+                ({dayNames[dayIndex]})
+            </span>
+        </span>
+    );
 }
 
 function normalizeName(name?: string) {
@@ -286,7 +308,7 @@ export default function GuestPage() {
         (event?.guest_names ?? []).forEach(push);
         answerNames.forEach(push);
 
-        return result;
+        return result.sort((a, b) => a.localeCompare(b, "ja"));
     }, [event?.guest_names, answerNames, userName]);
 
     if (!event) {
@@ -390,17 +412,20 @@ export default function GuestPage() {
         return (
             <main className="max-w-md mx-auto p-6 font-sans">
                 <div className="bg-white border rounded-xl p-6 shadow-sm text-center">
-                    <h1 className="text-2xl font-bold text-green-600 mb-4">🎉 回答が完了しました！</h1>
-                    <p className="text-gray-600 mb-8">日程調整へのご協力ありがとうございます。</p>
+                    <div className="text-sm font-bold text-white bg-orange-500 rounded-lg px-4 py-2 mb-3 inline-block">
+                        まだ完了していません！
+                    </div>
+                    <h1 className="text-xl font-bold text-gray-800 mb-2">アンケートに答えて回答を完了させてください</h1>
+                    <p className="text-gray-500 text-sm mb-6">送信後にアンケートにお答えいただくと回答完了となります。</p>
 
                     <div className="text-left bg-gray-50 p-5 rounded-xl border">
-                        <h2 className="font-bold text-gray-800 mb-2">💬 アプリの感想・改善要望をお聞かせください</h2>
+                        <h2 className="font-bold text-gray-800 mb-2">アプリの感想・改善要望をお聞かせください</h2>
                         <p className="text-xs text-gray-500 mb-4">匿名日程調整「にってい」は現在β版です。より使いやすくするため、ぜひご意見をお願いします！</p>
 
                         <select
                             value={feedbackType}
                             onChange={(e) => setFeedbackType(e.target.value as any)}
-                            className="w-full p-2 mb-3 border rounded-lg"
+                            className="w-full p-2 mb-3 border rounded-lg text-gray-800"
                         >
                             <option value="impression">使ってみた感想</option>
                             <option value="improvement">機能の改善要望</option>
@@ -412,7 +437,7 @@ export default function GuestPage() {
                             value={feedbackText}
                             onChange={(e) => setFeedbackText(e.target.value)}
                             placeholder="ここが使いやすかった、ここが分かりにくかった等"
-                            className="w-full p-3 border rounded-lg h-24 mb-3"
+                            className="w-full p-3 border rounded-lg h-24 mb-3 text-gray-800"
                         />
 
                         <button
@@ -486,23 +511,6 @@ export default function GuestPage() {
                 </div>
             )}
 
-            {pageError && (
-                <div
-                    style={{
-                        marginBottom: "16px",
-                        padding: "12px",
-                        borderRadius: "10px",
-                        backgroundColor: "#fff5f5",
-                        border: "1px solid #feb2b2",
-                        color: "#c53030",
-                        fontSize: "14px",
-                        whiteSpace: "pre-wrap",
-                    }}
-                >
-                    {pageError}
-                </div>
-            )}
-
             {restoredInfoMessage && (
                 <div
                     style={{
@@ -522,61 +530,61 @@ export default function GuestPage() {
             {!isSubmitted ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginTop: "20px" }}>
                     <section>
-                        {(event.guest_names ?? []).length > 0 && (
-                            <div style={{ marginBottom: "16px" }}>
-                                <label style={{ fontWeight: "bold", fontSize: "14px" }}>あなたの名前を選んでください</label>
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
-                                    {(event.guest_names ?? []).map((name) => {
-                                        const isAnswered = answeredNamesSet.has(normalizeName(name));
-                                        const isSelected = selectedPresetName === name;
-                                        return (
-                                            <button
-                                                key={name}
-                                                type="button"
-                                                disabled={isExpired}
-                                                onClick={() => {
-                                                    if (isSelected) {
-                                                        setSelectedPresetName(null);
-                                                        setUserName("");
-                                                    } else {
-                                                        setSelectedPresetName(name);
-                                                        setUserName(name);
-                                                    }
-                                                }}
-                                                style={{
-                                                    position: "relative",
-                                                    border: "1px solid #ddd",
-                                                    borderRadius: "999px",
-                                                    padding: "10px 16px",
-                                                    background: isSelected ? "#111" : isAnswered ? "#e8e8e8" : "#fff",
-                                                    color: isSelected ? "#fff" : "#333",
-                                                    cursor: isExpired ? "default" : "pointer",
-                                                    fontSize: "13px",
-                                                    fontWeight: isSelected ? "bold" : "normal",
-                                                }}
-                                            >
-                                                {name}
-                                                {isAnswered && !isSelected && (
-                                                    <span style={{
-                                                        marginLeft: "6px",
-                                                        fontSize: "10px",
-                                                        color: "#888",
-                                                        backgroundColor: "#d0d0d0",
-                                                        borderRadius: "999px",
-                                                        padding: "1px 6px",
-                                                    }}>
-                                                        済
-                                                    </span>
-                                                )}
-                                            </button>
-                                        );
-                                    })}
+                        {(event.guest_names ?? []).length > 0 && (() => {
+                            const sorted = [...(event.guest_names ?? [])].sort((a, b) => a.localeCompare(b, "ja"));
+                            const unanswered = sorted.filter(n => !answeredNamesSet.has(normalizeName(n)));
+                            const answered = sorted.filter(n => answeredNamesSet.has(normalizeName(n)));
+                            const renderChip = (name: string) => {
+                                const isAnswered = answeredNamesSet.has(normalizeName(name));
+                                const isSelected = selectedPresetName === name;
+                                return (
+                                    <button
+                                        key={name}
+                                        type="button"
+                                        disabled={isExpired}
+                                        onClick={() => {
+                                            if (isSelected) {
+                                                setSelectedPresetName(null);
+                                                setUserName("");
+                                            } else {
+                                                setSelectedPresetName(name);
+                                                setUserName(name);
+                                            }
+                                        }}
+                                        style={{
+                                            border: "1px solid #ddd",
+                                            borderRadius: "999px",
+                                            padding: "10px 16px",
+                                            background: isSelected ? "#111" : isAnswered ? "#e8e8e8" : "#fff",
+                                            color: isSelected ? "#fff" : "#333",
+                                            cursor: isExpired ? "default" : "pointer",
+                                            fontSize: "13px",
+                                            fontWeight: isSelected ? "bold" : "normal",
+                                        }}
+                                    >
+                                        {name}
+                                    </button>
+                                );
+                            };
+                            return (
+                                <div style={{ marginBottom: "16px" }}>
+                                    <label style={{ fontWeight: "bold", fontSize: "14px" }}>あなたの名前を選んでください</label>
+                                    {unanswered.length > 0 && (
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px" }}>
+                                            {unanswered.map(renderChip)}
+                                        </div>
+                                    )}
+                                    {answered.length > 0 && (
+                                        <div style={{ marginTop: "14px" }}>
+                                            <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>回答済み</div>
+                                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                                                {answered.map(renderChip)}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <div style={{ fontSize: "12px", color: "#888", marginTop: "8px" }}>
-                                    ※「済」は回答が完了した人です
-                                </div>
-                            </div>
-                        )}
+                            );
+                        })()}
 
                         <div style={{ display: "flex", gap: "10px" }}>
                             <div style={{ flex: 2 }}>
@@ -678,7 +686,7 @@ export default function GuestPage() {
                                                 padding: "8px",
                                                 borderRadius: "8px",
                                                 border: "1px solid #eee",
-                                                backgroundColor: selections[d] === "ok" ? "#000" : "white",
+                                                backgroundColor: selections[d] === "ok" ? "#16a34a" : "white",
                                                 color: selections[d] === "ok" ? "white" : "black",
                                                 cursor: isExpired ? "default" : "pointer",
                                                 fontWeight: "bold",
@@ -694,8 +702,8 @@ export default function GuestPage() {
                                                 padding: "8px",
                                                 borderRadius: "8px",
                                                 border: "1px solid #eee",
-                                                backgroundColor: selections[d] === "ng" ? "#eee" : "white",
-                                                color: "black",
+                                                backgroundColor: selections[d] === "ng" ? "#f87171" : "white",
+                                                color: selections[d] === "ng" ? "white" : "black",
                                                 cursor: isExpired ? "default" : "pointer",
                                                 fontWeight: "bold",
                                             }}
@@ -713,21 +721,22 @@ export default function GuestPage() {
 
                     <section
                         style={{
-                            border: "2px solid #e6fffa",
+                            border: "1px solid #e8e8e8",
                             padding: "15px",
                             borderRadius: "12px",
-                            backgroundColor: "#f0fff4",
+                            backgroundColor: "#fafafa",
+                            opacity: 0.8,
                         }}
                     >
                         <p
                             style={{
-                                fontWeight: "bold",
                                 fontSize: "13px",
                                 marginBottom: "10px",
-                                color: "#2c7a7b",
+                                color: "#555",
                             }}
                         >
-                            🚃 交通の忖度（集まりやすい場所の計算に使用,機能停止中）
+                            <span style={{ fontWeight: "bold", color: "#444" }}>機能停止中</span>
+                            {" — "}交通の忖度（集まりやすい場所の計算に使用）
                         </p>
 
                         <input
@@ -758,7 +767,7 @@ export default function GuestPage() {
                         }}
                     >
                         <p style={{ fontWeight: "bold", fontSize: "13px", marginBottom: "10px" }}>
-                            🕵️ 裏条件（匿名 / ホストも確認不可能）
+                            裏条件（匿名 / ホストも確認不可能）
                         </p>
 
                         <div style={{ marginBottom: "14px" }}>
@@ -887,7 +896,7 @@ export default function GuestPage() {
                         <label style={{ fontWeight: "bold", fontSize: "14px" }}>やりたいこと案・メモ</label>
                         <textarea
                             disabled={isExpired}
-                            placeholder="例：焼肉がいいです！"
+                            placeholder="例：3日は2時から参加できます。"
                             value={suggestion}
                             onChange={(e) => setSuggestion(e.target.value)}
                             style={{
@@ -901,6 +910,22 @@ export default function GuestPage() {
                             }}
                         />
                     </section>
+
+                    {pageError && (
+                        <div
+                            style={{
+                                padding: "12px",
+                                borderRadius: "10px",
+                                backgroundColor: "#fff5f5",
+                                border: "1px solid #feb2b2",
+                                color: "#c53030",
+                                fontSize: "14px",
+                                whiteSpace: "pre-wrap",
+                            }}
+                        >
+                            {pageError}
+                        </div>
+                    )}
 
                     <button
                         type="button"
@@ -922,7 +947,7 @@ export default function GuestPage() {
                 </div>
             ) : (
                 <div style={{ textAlign: "center", padding: "60px" }}>
-                    <h2 style={{ color: "#28a745" }}>✅ 送信完了！</h2>
+                    <h2 style={{ color: "#28a745" }}>🎉 回答が完了しました！</h2>
                     <p style={{ marginTop: "10px", color: "#666", lineHeight: 1.8 }}>
                         ホストの集計をお待ちください。
                         <br />

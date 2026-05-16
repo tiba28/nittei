@@ -109,7 +109,7 @@ export default function CreateEvent() {
           fontFamily: "sans-serif",
         }}
       >
-        <h1 style={{ textAlign: "center", fontSize: "22px" }}>📅 予定調整ツールA</h1>
+        <h1 style={{ textAlign: "center", fontSize: "22px" }}>予定調整ツール nittei</h1>
         <p
           style={{
             textAlign: "center",
@@ -395,7 +395,7 @@ export default function CreateEvent() {
         fontFamily: "sans-serif",
       }}
     >
-      <h2 style={{ textAlign: "center" }}>📝 最終確認</h2>
+      <h2 style={{ textAlign: "center" }}>最終確認</h2>
       <div style={{ border: "1px solid #eee", padding: "20px", borderRadius: "15px", marginTop: "20px" }}>
         <p><strong>イベント名:</strong> {title}</p>
         <p style={{ fontSize: "14px", color: "#666" }}><strong>詳細:</strong> {description || "なし"}</p>
