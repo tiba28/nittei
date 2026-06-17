@@ -100,33 +100,54 @@ export default function CreateEvent() {
     return (
       <main
         style={{
-          padding: "20px",
           maxWidth: "450px",
           margin: "0 auto",
           color: "black",
-          backgroundColor: "white",
+          backgroundColor: "#f0efec",
           minHeight: "100vh",
           fontFamily: "sans-serif",
         }}
       >
-        <h1 style={{ textAlign: "center", fontSize: "22px" }}>予定調整ツール nittei</h1>
-        <p
-          style={{
-            textAlign: "center",
-            fontSize: "16px",
-            lineHeight: "1.8",
-            margin: "0 auto 24px",
-            maxWidth: "720px",
-          }}
-        >
-          nitteiは、参加者同士に回答を見せずに日程調整ができるツールです。
-          候補日を作成して回答を集めるだけでなく、表では出しにくい条件も記入できます。
-          ホストは回答をまとめて確認でき、日程決定後の連絡文面作成まで進められます。
-        </p>
+        <div style={{ backgroundColor: "#111", padding: "14px 20px", display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "20px", fontWeight: "800", color: "#fff", letterSpacing: "-0.03em" }}>nittei</span>
+          <span style={{ width: "1px", height: "16px", backgroundColor: "#333", display: "inline-block" }} />
+          <span style={{ fontSize: "11px", color: "#666", letterSpacing: "0.12em" }}>SCHEDULE TOOL</span>
+        </div>
+        <div style={{ padding: "20px" }}>
+
+        <div style={{ backgroundColor: "#fafafa", border: "1px solid #ebebeb", borderRadius: "14px", padding: "18px 20px", marginBottom: "16px" }}>
+          <p style={{ fontSize: "10px", fontWeight: "700", color: "#bbb", letterSpacing: "0.12em", marginBottom: "14px" }}>
+            こんな経験ありませんか
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {[
+              "「自分だけ暇だと思われたくない」",
+              "あの人が来るなら行きたくない、でも言えない",
+              "ホストとして、みんなに気を遣って日程が決められない",
+            ].map((text, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                <span style={{ width: "20px", height: "20px", backgroundColor: "#e8e8e8", borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#999", fontWeight: "bold", marginTop: "1px" }}>
+                  {i + 1}
+                </span>
+                <span style={{ fontSize: "14px", color: "#444", lineHeight: 1.6 }}>{text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ backgroundColor: "#111", borderRadius: "14px", padding: "20px", marginBottom: "32px", textAlign: "center" }}>
+          <p style={{ fontSize: "15px", color: "#fff", lineHeight: "1.9", margin: "0 0 8px", fontWeight: "600" }}>
+            回答を参加者同士に見せない<br />日程調整ツール
+          </p>
+          <p style={{ fontSize: "13px", color: "#888", lineHeight: 1.7, margin: 0 }}>
+            「あの人が来るなら参加する／しない」という<br />
+            <span style={{ color: "#ccc", fontWeight: "600" }}>裏条件</span>も、誰にも知られずに設定できます。
+          </p>
+        </div>
 
 
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <section>
+          <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
             <label style={{ fontWeight: "bold" }}>1. イベント名</label>
             <input
               type="text"
@@ -136,7 +157,7 @@ export default function CreateEvent() {
             />
           </section>
 
-          <section>
+          <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
             <label style={{ fontWeight: "bold" }}>2. イベント詳細（場所・予算など）</label>
             <textarea
               value={description}
@@ -152,7 +173,7 @@ export default function CreateEvent() {
             />
           </section>
 
-          <section>
+          <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
             <label style={{ fontWeight: "bold" }}>3. パスワード & 期限</label>
             <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
               <input
@@ -160,18 +181,18 @@ export default function CreateEvent() {
                 placeholder="パスワード"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
+                style={{ flex: 1, minWidth: 0, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
               />
               <input
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
+                style={{ flex: 1, minWidth: 0, padding: "10px", borderRadius: "10px", border: "1px solid #ccc" }}
               />
             </div>
           </section>
 
-          <section style={{ border: "1px solid #eee", padding: "15px", borderRadius: "15px" }}>
+          <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
             <div
               style={{
                 display: "flex",
@@ -267,7 +288,7 @@ export default function CreateEvent() {
             </div>
           </section>
 
-          <section style={{ border: "1px solid #eee", padding: "15px", borderRadius: "15px" }}>
+          <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
             <label style={{ fontWeight: "bold" }}>5. 招待予定のゲスト名（任意）</label>
             <p style={{ fontSize: "12px", color: "#666", margin: "6px 0 12px" }}>
               参加者の名前を事前に登録しておくと、ゲストが名前を選んで回答できます。
@@ -379,6 +400,7 @@ export default function CreateEvent() {
             確認画面へ
           </button>
         </div>
+        </div>
       </main>
     );
   }
@@ -386,17 +408,22 @@ export default function CreateEvent() {
   return (
     <main
       style={{
-        padding: "20px",
         maxWidth: "450px",
         margin: "0 auto",
-        backgroundColor: "white",
+        backgroundColor: "#f0efec",
         color: "black",
         minHeight: "100vh",
         fontFamily: "sans-serif",
       }}
     >
-      <h2 style={{ textAlign: "center" }}>最終確認</h2>
-      <div style={{ border: "1px solid #eee", padding: "20px", borderRadius: "15px", marginTop: "20px" }}>
+      <div style={{ backgroundColor: "#111", padding: "14px 20px", display: "flex", alignItems: "center", gap: "10px" }}>
+        <span style={{ fontSize: "20px", fontWeight: "800", color: "#fff", letterSpacing: "-0.03em" }}>nittei</span>
+        <span style={{ width: "1px", height: "16px", backgroundColor: "#333", display: "inline-block" }} />
+        <span style={{ fontSize: "11px", color: "#666", letterSpacing: "0.12em" }}>SCHEDULE TOOL</span>
+      </div>
+      <div style={{ padding: "20px" }}>
+      <h2 style={{ textAlign: "center", marginBottom: "16px" }}>最終確認</h2>
+      <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8", marginTop: "4px" }}>
         <p><strong>イベント名:</strong> {title}</p>
         <p style={{ fontSize: "14px", color: "#666" }}><strong>詳細:</strong> {description || "なし"}</p>
         <p><strong>回答期限:</strong> {deadline}</p>
@@ -460,6 +487,7 @@ export default function CreateEvent() {
         >
           修正する
         </button>
+      </div>
       </div>
     </main>
   );

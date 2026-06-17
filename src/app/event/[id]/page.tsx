@@ -460,15 +460,20 @@ export default function GuestPage() {
     return (
         <main
             style={{
-                padding: "20px",
                 maxWidth: "500px",
                 margin: "0 auto",
                 fontFamily: "sans-serif",
-                backgroundColor: "white",
+                backgroundColor: "#f0efec",
                 color: "black",
                 minHeight: "100vh",
             }}
         >
+            <div style={{ backgroundColor: "#111", padding: "14px 20px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontSize: "20px", fontWeight: "800", color: "#fff", letterSpacing: "-0.03em" }}>nittei</span>
+                <span style={{ width: "1px", height: "16px", backgroundColor: "#333", display: "inline-block" }} />
+                <span style={{ fontSize: "11px", color: "#666", letterSpacing: "0.12em" }}>SCHEDULE TOOL</span>
+            </div>
+            <div style={{ padding: "20px" }}>
             <h1 style={{ fontSize: "22px", fontWeight: "bold", marginBottom: "10px" }}>
                 {event.title}
             </h1>
@@ -528,8 +533,8 @@ export default function GuestPage() {
             )}
 
             {!isSubmitted ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginTop: "20px" }}>
-                    <section>
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "20px" }}>
+                    <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
                         {(event.guest_names ?? []).length > 0 && (() => {
                             const sorted = [...(event.guest_names ?? [])].sort((a, b) => a.localeCompare(b, "ja"));
                             const unanswered = sorted.filter(n => !answeredNamesSet.has(normalizeName(n)));
@@ -655,7 +660,7 @@ export default function GuestPage() {
                         </div>
                     </section>
 
-                    <section>
+                    <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
                         <label style={{ fontWeight: "bold", fontSize: "14px" }}>日程の回答</label>
                         <div
                             style={{
@@ -721,10 +726,11 @@ export default function GuestPage() {
 
                     <section
                         style={{
+                            backgroundColor: "white",
+                            borderRadius: "16px",
+                            padding: "20px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
                             border: "1px solid #e8e8e8",
-                            padding: "15px",
-                            borderRadius: "12px",
-                            backgroundColor: "#fafafa",
                             opacity: 0.8,
                         }}
                     >
@@ -760,9 +766,11 @@ export default function GuestPage() {
 
                     <section
                         style={{
-                            border: "2px solid #f0f0f0",
-                            padding: "15px",
-                            borderRadius: "12px",
+                            backgroundColor: "white",
+                            borderRadius: "16px",
+                            padding: "20px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                            border: "1px solid #e8e8e8",
                             opacity: isExpired ? 0.6 : 1,
                         }}
                     >
@@ -871,7 +879,7 @@ export default function GuestPage() {
                         </div>
                     </section>
 
-                    <section>
+                    <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
                         <label style={{ fontWeight: "bold", fontSize: "14px" }}>メールアドレス（カレンダー連携用）</label>
                         <input
                             type="email"
@@ -892,7 +900,7 @@ export default function GuestPage() {
                         </div>
                     </section>
 
-                    <section>
+                    <section style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "1px solid #e8e8e8" }}>
                         <label style={{ fontWeight: "bold", fontSize: "14px" }}>やりたいこと案・メモ</label>
                         <textarea
                             disabled={isExpired}
@@ -932,17 +940,19 @@ export default function GuestPage() {
                         onClick={submit}
                         disabled={isExpired}
                         style={{
-                            padding: "20px",
-                            backgroundColor: isExpired ? "#ccc" : "#000",
+                            padding: "16px",
+                            backgroundColor: isExpired ? "#ccc" : "#111",
                             color: "white",
                             borderRadius: "12px",
-                            fontWeight: "bold",
+                            fontWeight: "700",
                             border: "none",
                             cursor: isExpired ? "not-allowed" : "pointer",
-                            fontSize: "16px",
+                            fontSize: "15px",
+                            letterSpacing: "0.05em",
+                            boxShadow: isExpired ? "none" : "0 4px 12px rgba(0,0,0,0.2)",
                         }}
                     >
-                        {isExpired ? "回答締切となりました" : "回答を送信する"}
+                        {isExpired ? "回答締切となりました" : "回答を送信する →"}
                     </button>
                 </div>
             ) : (
@@ -971,7 +981,36 @@ export default function GuestPage() {
                 </div>
             )}
 
-            <footer style={{ marginTop: "50px", textAlign: "center", paddingBottom: "40px" }}>
+            <div style={{ marginTop: "48px", borderRadius: "20px", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.15)" }}>
+                <div style={{ height: "3px", background: "linear-gradient(90deg, #444, #888, #444)" }} />
+                <div style={{ background: "linear-gradient(145deg, #111 0%, #1c1c1c 100%)", padding: "32px 24px 28px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontSize: "90px", fontWeight: "900", color: "rgba(255,255,255,0.05)", letterSpacing: "-0.05em", pointerEvents: "none", userSelect: "none", whiteSpace: "nowrap" }}>
+                        nittei
+                    </div>
+                    <span style={{ display: "inline-block", fontSize: "10px", fontWeight: "700", color: "#777", letterSpacing: "0.2em", border: "1px solid #2a2a2a", padding: "4px 12px", borderRadius: "999px", marginBottom: "16px" }}>
+                        SCHEDULE TOOL
+                    </span>
+                    <p style={{ fontSize: "36px", fontWeight: "800", letterSpacing: "-0.03em", color: "#fff", margin: "0 0 6px" }}>
+                        nittei
+                    </p>
+                    <p style={{ fontSize: "12px", color: "#666", letterSpacing: "0.05em", margin: 0 }}>
+                        本音で答えられる日程調整
+                    </p>
+                </div>
+                <div style={{ height: "1px", background: "linear-gradient(90deg, transparent, #ddd, transparent)" }} />
+                <div style={{ backgroundColor: "#fafafa", padding: "28px 24px", textAlign: "center" }}>
+                    <p style={{ fontSize: "13px", color: "#555", lineHeight: 2, margin: "0 0 22px" }}>
+                        このイベントはnitteiで作成されました。<br />
+                        回答は参加者同士に公開されず、<strong style={{ color: "#111" }}>裏条件</strong>で<br />
+                        本音を匿名で伝えることもできます。
+                    </p>
+                    <a href="/" style={{ display: "inline-block", backgroundColor: "#111", color: "#fff", fontSize: "13px", fontWeight: "700", padding: "14px 32px", borderRadius: "10px", textDecoration: "none", letterSpacing: "0.05em", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}>
+                        自分もイベントを作成する →
+                    </a>
+                </div>
+            </div>
+
+            <footer style={{ marginTop: "30px", textAlign: "center", paddingBottom: "40px" }}>
                 <button
                     type="button"
                     onClick={() => setShowLogin(!showLogin)}
@@ -1037,6 +1076,7 @@ export default function GuestPage() {
                     </div>
                 )}
             </footer>
+        </div>
         </main>
     );
 }
